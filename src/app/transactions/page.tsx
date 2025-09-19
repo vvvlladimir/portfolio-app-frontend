@@ -8,6 +8,8 @@ import { Transaction, Position } from "@/types/schemas"
 import {Upload} from "lucide-react"
 import { AnimatedTabs } from "@/components/ui/AnimatedTabs"
 import {PositionsTable} from "@/components/layout/PositionsTable";
+import React from "react";
+import {TickerWebSocket} from "@/hooks/tickerWebSocket"
 
 
 export default function TransactionsPage() {
@@ -18,6 +20,15 @@ export default function TransactionsPage() {
     const { data: positions, error: posError, isLoading: posLoading } = useSWR<Position[]>(
         "http://localhost:8000/portfolio/last-positions"
     )
+
+    const tickers = React.useMemo(() => {
+        if (!positions) return []
+        const set = new Set(positions.map(p => p.ticker))
+        return Array.from(set)
+    }, [positions])
+
+    const liveData = TickerWebSocket(tickers)
+
     if (txLoading || posLoading) return <p className="p-6">Loading...</p>
     if (txError || posError) {
         const errorMessage = txError?.message || posError?.message || "Unknown error"
@@ -49,7 +60,7 @@ export default function TransactionsPage() {
                     <p data-slot="card-description" className="text-gray-500 text-xs sm:text-sm">All your current holdings with live market data</p>
                 </div>
             </div>
-            <PositionsTable positions={positions || []}/>
+            <PositionsTable positions={positions || []} liveData={liveData}/>
         </Card>
     )
 

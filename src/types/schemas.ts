@@ -32,11 +32,24 @@ export interface Position {
     date: string
     ticker: string
     shares: number
-    market_value: number
+    price: number
+    position_value: number
+    market_daily_return_pct: number
+    total_pnl: number
     ticker_info: {
         currency: string,
         long_name: string,
         exchange: string,
         asset_type: PositionType
     }
+}
+
+export type LiveTicker = {
+    id: string
+    price: number
+    time: number
+    changePercent: number
+    change: number
+    currency?: string
+    exchange?: string
 }

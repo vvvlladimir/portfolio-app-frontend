@@ -12,10 +12,11 @@ import {
     TableCell,
 } from "@/components/ui/table"
 import { TypeBadge } from "@/components/ui/TypeBadge"
-import { Position } from "@/types/schemas"
+import {LiveTicker, Position} from "@/types/schemas"
 import { formatData } from "@/lib/formatData"
+import {ProfitBadge} from "@/components/ui/ProfitBadge";
 
-export function PositionsTable({ positions }: { positions: Position[] }) {
+export function PositionsTable({positions, liveData,}: { positions: Position[], liveData: Record<string, LiveTicker> })  {
     const [sortAsc, setSortAsc] = useState(true)
 
     const sortedTx = [...(positions || [])].sort((a, b) => {
@@ -70,10 +71,26 @@ export function PositionsTable({ positions }: { positions: Position[] }) {
                             {tx.shares}
                         </TableCell>
                         <TableCell className="font-mono tabular-nums">
-                            {formatData(tx.market_value, tx.ticker_info.currency)}
+                            {formatData(tx.position_value, tx.ticker_info.currency)}
                         </TableCell>
                         <TableCell className="font-mono tabular-nums">
-                            {formatData(tx.market_value / tx.shares , tx.ticker_info.currency)}
+                            {formatData(tx.price , tx.ticker_info.currency)}
+                        </TableCell>
+                        <TableCell className="font-mono tabular-nums text-right">
+                            <ProfitBadge
+                                value={liveData[tx.ticker]?.change ?? tx.market_daily_return_pct * tx.position_value }
+                                percent={liveData[tx.ticker]?.changePercent ?? tx.market_daily_return_pct}
+                                currency={tx.ticker_info.currency}
+                            />
+
+                        </TableCell>
+                        <TableCell className="font-mono tabular-nums text-sm text-right">
+                            <ProfitBadge
+                                className="text-right"
+                                value={tx.total_pnl}
+                                currency={tx.ticker_info.currency}
+                                invested={tx.position_value - tx.total_pnl}
+                            />
                         </TableCell>
                     </TableRow>
                 ))}
