@@ -8,8 +8,8 @@ import { Transaction, Position } from "@/types/schemas"
 import {Upload} from "lucide-react"
 import { AnimatedTabs } from "@/components/ui/AnimatedTabs"
 import {PositionsTable} from "@/components/layout/PositionsTable";
-import React from "react";
-import {TickerWebSocket} from "@/hooks/tickerWebSocket"
+import React, {useEffect} from "react";
+import {useTickerStore} from "@/stores/useTickerStore"
 
 
 export default function TransactionsPage() {
@@ -23,11 +23,15 @@ export default function TransactionsPage() {
 
     const tickers = React.useMemo(() => {
         if (!positions) return []
-        const set = new Set(positions.map(p => p.ticker))
-        return Array.from(set)
+        return Array.from(new Set(positions.map((p) => p.ticker)))
     }, [positions])
 
-    const liveData = TickerWebSocket(tickers)
+    const { liveData, connect, disconnect } = useTickerStore()
+    useEffect(() => {
+        connect(tickers, 5)
+        return () => disconnect()
+    }, [connect, disconnect, tickers])
+
 
     if (txLoading || posLoading) return <p className="p-6">Loading...</p>
     if (txError || posError) {

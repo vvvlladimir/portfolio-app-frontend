@@ -25,9 +25,11 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-        <body className={`${inter.variable} ${jetbrains.variable} antialiased`}>
-        <Providers>{children}</Providers>
-        </body>
+            <body className={`${inter.variable} ${jetbrains.variable} antialiased`}>
+                <main className="container mx-auto px-4">
+                    <Providers>{children}</Providers>
+                </main>
+            </body>
         </html>
     )
 }

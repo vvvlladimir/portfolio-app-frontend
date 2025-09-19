@@ -43,13 +43,3 @@ export interface Position {
         asset_type: PositionType
     }
 }
-
-export type LiveTicker = {
-    id: string
-    price: number
-    time: number
-    changePercent: number
-    change: number
-    currency?: string
-    exchange?: string
-}
