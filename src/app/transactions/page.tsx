@@ -3,11 +3,11 @@
 import useSWR from "swr"
 import { Card } from "@/components/ui/Card"
 import { PrimaryButton } from "@/components/ui/PrimaryButton"
-import { TransactionsTable } from "@/components/layout/TransactionsTable"
+import { TransactionsTable } from "@/app/transactions/TransactionsTable"
 import { Transaction, Position } from "@/types/schemas"
 import {Upload} from "lucide-react"
 import { AnimatedTabs } from "@/components/ui/AnimatedTabs"
-import {PositionsTable} from "@/components/layout/PositionsTable";
+import {PositionsTable} from "@/app/transactions/PositionsTable";
 import React, {useEffect} from "react";
 import {useTickerStore} from "@/stores/useTickerStore"
 
@@ -26,9 +26,13 @@ export default function TransactionsPage() {
         return Array.from(new Set(positions.map((p) => p.ticker)))
     }, [positions])
 
-    const { liveData, connect, disconnect } = useTickerStore()
+
+    // tickers = ["AAPL", "TSLA", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "BRK-B", "JPM", "V"] // for demo purposes
+
+    const connect = useTickerStore((s) => s.connect)
+    const disconnect = useTickerStore((s) => s.disconnect)
     useEffect(() => {
-        connect(tickers, 5)
+        if (tickers.length) connect(tickers, 5)
         return () => disconnect()
     }, [connect, disconnect, tickers])
 
@@ -64,7 +68,7 @@ export default function TransactionsPage() {
                     <p data-slot="card-description" className="text-gray-500 text-xs sm:text-sm">All your current holdings with live market data</p>
                 </div>
             </div>
-            <PositionsTable positions={positions || []} liveData={liveData}/>
+            <PositionsTable positions={positions || []} />
         </Card>
     )
 

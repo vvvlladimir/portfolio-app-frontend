@@ -24,9 +24,6 @@ function chunkArray<T>(arr: T[], size: number): T[][] {
     )
 }
 
-let lastUpdate = 0
-const THROTTLE_MS = 2000
-
 export const useTickerStore = create<TickerStore>((set) => {
     let sockets: WebSocket[] = []
     let Yaticker: protobuf.Type | null = null
@@ -45,7 +42,6 @@ export const useTickerStore = create<TickerStore>((set) => {
             await initProto()
             if (!Yaticker) return
 
-            // Закрыть старые подключения, если были
             sockets.forEach((ws) => ws.close())
             sockets = []
 
@@ -73,25 +69,17 @@ export const useTickerStore = create<TickerStore>((set) => {
                     const msg = Yaticker.decode(bytes)
                     const obj = Yaticker.toObject(msg, { longs: Number })
 
-                    // console.log(obj)
+                    console.log(obj)
 
 
-                    const now = Date.now()
-                    if (now - lastUpdate > THROTTLE_MS) {
-                        lastUpdate = now
-                        set((state) => {
-                            const prev = state.liveData[obj.id]
-                            if (prev && prev.price === obj.price) {
-                                return state // ничего не меняем → Zustand не триггерит ререндер
-                            }
-                            return {
-                                liveData: {
-                                    ...state.liveData,
-                                    [obj.id]: obj,
-                                },
-                            }
-                        })
-                    }
+                    set((state) => {
+                        return {
+                            liveData: {
+                                ...state.liveData,
+                                [obj.id]: obj,
+                            },
+                        }
+                    })
                 }
 
                 ws.onclose = () => console.log("WebSocket closed for", chunk)
@@ -105,3 +93,7 @@ export const useTickerStore = create<TickerStore>((set) => {
         },
     }
 })
+
+// Селектор: подписка только на один тикер
+export const useTickerData = (ticker: string) =>
+    useTickerStore((state) => state.liveData[ticker])

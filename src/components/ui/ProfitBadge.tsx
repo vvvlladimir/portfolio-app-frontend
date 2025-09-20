@@ -18,16 +18,16 @@ export function ProfitBadge({ value, percent, currency, invested, className }: P
     useEffect(() => {
         if (value !== prevValue.current) {
             if (value > prevValue.current) {
-                setHighlight("bg-green-100 dark:bg-green-900")
+                setHighlight("animate-highlightGreen")
             } else {
-                setHighlight("bg-red-100 dark:bg-red-900")
+                setHighlight("animate-highlightRed")
             }
 
             // обновляем прошлое значение сразу
             prevValue.current = value
 
             // сбрасываем highlight через 500мс
-            const timeout = setTimeout(() => setHighlight(""), 5000)
+            const timeout = setTimeout(() => setHighlight(""), 500)
             return () => clearTimeout(timeout)
         }
     }, [value])
@@ -44,13 +44,13 @@ export function ProfitBadge({ value, percent, currency, invested, className }: P
 
     return (
         <div
-            className={`font-mono tabular-nums text-sm transition-colors duration-500 ${colorClass} ${
+            className={`font-mono tabular-nums text-sm transition-colors inline-block ${colorClass} ${
                 highlight
-            } ${className ?? ""}`}
+            } ${className}`}
         >
             <div>{formatData(value, currency)}</div>
             {computedPercent != null && (
-                <div className="text-xs opacity-50">{computedPercent.toFixed(2)}%</div>
+                <div className="text-xs opacity-60">{computedPercent.toFixed(2)}%</div>
             )}
         </div>
     )

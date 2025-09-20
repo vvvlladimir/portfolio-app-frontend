@@ -1,19 +1,34 @@
 "use client"
 
-import { useState } from "react"
-import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react"
+import {
+    ColumnDef,
+    flexRender,
+    getCoreRowModel,
+    useReactTable,
+} from "@tanstack/react-table"
 
 import {
-    Table as ShadTable,
+    Table,
     TableHeader,
     TableBody,
     TableRow,
     TableHead,
     TableCell,
 } from "@/components/ui/table"
+
 import { TypeBadge } from "@/components/ui/TypeBadge"
 import { Transaction } from "@/types/schemas"
 import { formatData, formatDate } from "@/lib/formatData"
+import { useState } from "react"
+import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react"
+
+
+interface DataTableProps<TData, TValue> {
+    columns: ColumnDef<TData, TValue>[]
+    data: TData[]
+}
+
+
 
 export function TransactionsTable({ transactions }: { transactions: Transaction[] }) {
     const [sortAsc, setSortAsc] = useState(true)
@@ -25,7 +40,7 @@ export function TransactionsTable({ transactions }: { transactions: Transaction[
     })
 
     return (
-        <ShadTable>
+        <Table>
             <TableHeader>
                 <TableRow>
                     <TableHead
@@ -81,6 +96,6 @@ export function TransactionsTable({ transactions }: { transactions: Transaction[
                     </TableRow>
                 ))}
             </TableBody>
-        </ShadTable>
+        </Table>
     )
 }

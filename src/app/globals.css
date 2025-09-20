@@ -12,6 +12,15 @@
   --font-mono: "JetBrains Mono", monospace;
 }
 
+@keyframes highlightGreen {
+  0% { background-color: rgb(220 252 231); }
+  100% { background-color: transparent; }
+}
+@keyframes highlightRed {
+  0% { background-color: rgb(254 226 226); }
+  100% { background-color: transparent; }
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
@@ -22,6 +31,13 @@
 @layer utilities {
   .tabular-nums {
     font-variant-numeric: tabular-nums;
+  }
+
+  .animate-highlightGreen {
+    animation: highlightGreen 0.8s ease-out;
+  }
+  .animate-highlightRed {
+    animation: highlightRed 0.8s ease-out;
   }
 }
 
