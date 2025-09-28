@@ -23,10 +23,8 @@ export function ProfitBadge({ value, percent, currency, invested, className }: P
                 setHighlight("animate-highlightRed")
             }
 
-            // обновляем прошлое значение сразу
             prevValue.current = value
 
-            // сбрасываем highlight через 500мс
             const timeout = setTimeout(() => setHighlight(""), 500)
             return () => clearTimeout(timeout)
         }

@@ -1,12 +1,12 @@
 import { TransactionType, PositionType } from "@/types/schemas"
 
-// Union всех значений
+// Union
 type TransactionTypeValues = `${TransactionType}`
 type PositionTypeValues = `${PositionType}`
 
 export type BadgeVariant = TransactionTypeValues | PositionTypeValues
 
-// Цвета
+// Colors
 const badgeColors: Record<BadgeVariant, string> = {
     // TransactionType
     BUY: "bg-green-100 dark:bg-green-700 text-green-700 dark:text-green-100",
@@ -20,7 +20,6 @@ const badgeColors: Record<BadgeVariant, string> = {
     CRYPTOCURRENCY: "bg-yellow-100 dark:bg-yellow-700 text-yellow-700 dark:text-yellow-100",
 }
 
-// Лейблы для отображения
 const badgeLabels: Record<BadgeVariant, string> = {
     // TransactionType
     BUY: "BUY",
@@ -34,10 +33,10 @@ const badgeLabels: Record<BadgeVariant, string> = {
     CRYPTOCURRENCY: "CRYPTO",
 }
 
-export function TypeBadge({ type }: { type: BadgeVariant }) {
+export function TypeBadge({ data }: { data: BadgeVariant }) {
     const colorClass =
-        badgeColors[type] ?? "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-100"
-    const label = badgeLabels[type] ?? type
+        badgeColors[data] ?? "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-100"
+    const label = badgeLabels[data] ?? data
 
     return (
         <span className={`px-2 py-1 text-xs font-medium rounded ${colorClass}`}>

@@ -1,15 +1,25 @@
 "use client"
 
 import useSWR from "swr"
-import { Card } from "@/components/ui/Card"
-import { PrimaryButton } from "@/components/ui/PrimaryButton"
+import {
+    Card,
+    CardAction,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card"
 import { TransactionsTable } from "@/app/transactions/TransactionsTable"
 import { Transaction, Position } from "@/types/schemas"
 import {Upload} from "lucide-react"
 import { AnimatedTabs } from "@/components/ui/AnimatedTabs"
-import {PositionsTable} from "@/app/transactions/PositionsTable";
 import React, {useEffect} from "react";
 import {useTickerStore} from "@/stores/useTickerStore"
+import {transactionsColumns} from "@/app/transactions/transactionsColumns";
+import {positionsColumns} from "@/app/transactions/positionsColumns";
+import {Button} from "@/components/ui/button";
+import {UpdateTransactions} from "@/components/dialogs/updateTransactions";
 
 
 export default function TransactionsPage() {
@@ -43,32 +53,34 @@ export default function TransactionsPage() {
         return <p className="p-6 text-red-500">Error: {errorMessage}</p>
     }
 
-    const HistoryBlock = () => (
+    const TransactionsBlock = () => (
         <Card>
-            <div className="flex justify-between items-center mb-4">
-                <div>
-                    <h4 className="text-base sm:text-lg">Transaction History</h4>
-                    <p data-slot="card-description" className="text-gray-500 text-xs sm:text-sm">All your buy and sell transactions</p>
-                </div>
-
-                <PrimaryButton>
-                    <Upload className="w-4 h-4 mr-2 inline" />
-                    Upload Transactions
-                </PrimaryButton>
-            </div>
-            <TransactionsTable transactions={transactions || []}/>
+            <CardHeader>
+                <CardTitle>Transaction History</CardTitle>
+                <CardDescription>
+                    All your buy and sell transactions
+                </CardDescription>
+                <CardAction>
+                    <UpdateTransactions/>
+                </CardAction>
+            </CardHeader>
+            <CardContent>
+                <TransactionsTable columns={transactionsColumns} data={transactions || []}/>
+            </CardContent>
         </Card>
     )
 
     const PositionsBlock = () => (
         <Card>
-            <div className="flex justify-between items-center mb-4">
-                <div>
-                    <h4 className="text-base sm:text-lg">Current Positions</h4>
-                    <p data-slot="card-description" className="text-gray-500 text-xs sm:text-sm">All your current holdings with live market data</p>
-                </div>
-            </div>
-            <PositionsTable positions={positions || []} />
+            <CardHeader>
+                <CardTitle>Current Positions</CardTitle>
+                <CardDescription>
+                    All your current holdings with live market data
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <TransactionsTable columns={positionsColumns} data={positions || []}/>
+            </CardContent>
         </Card>
     )
 
@@ -83,7 +95,7 @@ export default function TransactionsPage() {
             <div className="">
                 <AnimatedTabs
                     tabs={[
-                        { value: "history", label: "Transaction History", content: <HistoryBlock /> },
+                        { value: "history", label: "Transaction History", content: <TransactionsBlock /> },
                         { value: "positions", label: "Current Positions", content: <PositionsBlock /> },
                     ]}
                 />
