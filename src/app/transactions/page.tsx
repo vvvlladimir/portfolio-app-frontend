@@ -12,17 +12,17 @@ import {
 } from "@/components/ui/card"
 import { TransactionsTable } from "@/app/transactions/TransactionsTable"
 import { Transaction, Position } from "@/types/schemas"
-import {Upload} from "lucide-react"
 import { AnimatedTabs } from "@/components/ui/AnimatedTabs"
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {useTickerStore} from "@/stores/useTickerStore"
 import {transactionsColumns} from "@/app/transactions/transactionsColumns";
 import {positionsColumns} from "@/app/transactions/positionsColumns";
-import {Button} from "@/components/ui/button";
 import {UpdateTransactions} from "@/components/dialogs/updateTransactions";
 
 
 export default function TransactionsPage() {
+    const [transOpen, setTransOpen] = useState(false)
+
     const { data: transactions, error: txError, isLoading: txLoading } = useSWR<Transaction[]>(
         "http://localhost:8000/portfolio/transactions"
     )
@@ -47,43 +47,87 @@ export default function TransactionsPage() {
     }, [connect, disconnect, tickers])
 
 
-    if (txLoading || posLoading) return <p className="p-6">Loading...</p>
-    if (txError || posError) {
-        const errorMessage = txError?.message || posError?.message || "Unknown error"
-        return <p className="p-6 text-red-500">Error: {errorMessage}</p>
+    const TransactionsBlock = () => {
+        if (txError || !transactions?.length) {
+            return (
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Transaction History</CardTitle>
+                        <CardDescription>
+                            No transactions found. Upload your CSV to get started.
+                        </CardDescription>
+                        <CardAction>
+                            <UpdateTransactions
+                                onOpenChange={setTransOpen}
+                                open={transOpen}
+                            />
+                        </CardAction>
+                    </CardHeader>
+                    <CardContent className="flex items-center justify-center py-10">
+                        <p className="text-gray-500">You don’t have any data yet.</p>
+                    </CardContent>
+                </Card>
+            )
+        }
+
+        return (
+            <Card>
+                <CardHeader>
+                    <CardTitle>Transaction History</CardTitle>
+                    <CardDescription>
+                        All your buy and sell transactions
+                    </CardDescription>
+                    <CardAction>
+                        <UpdateTransactions
+                            onOpenChange={setTransOpen}
+                            open={transOpen}
+                        />
+                    </CardAction>
+                </CardHeader>
+                <CardContent>
+                    <TransactionsTable
+                        columns={transactionsColumns}
+                        data={transactions}
+                    />
+                </CardContent>
+            </Card>
+        )
     }
 
-    const TransactionsBlock = () => (
-        <Card>
-            <CardHeader>
-                <CardTitle>Transaction History</CardTitle>
-                <CardDescription>
-                    All your buy and sell transactions
-                </CardDescription>
-                <CardAction>
-                    <UpdateTransactions/>
-                </CardAction>
-            </CardHeader>
-            <CardContent>
-                <TransactionsTable columns={transactionsColumns} data={transactions || []}/>
-            </CardContent>
-        </Card>
-    )
+    const PositionsBlock = () => {
+        if (posError || !positions?.length) {
+            return (
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Current Positions</CardTitle>
+                        <CardDescription>
+                            No positions available. Upload your transactions first.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex items-center justify-center py-10">
+                        <p className="text-gray-500">Waiting for your first upload…</p>
+                    </CardContent>
+                </Card>
+            )
+        }
 
-    const PositionsBlock = () => (
-        <Card>
-            <CardHeader>
-                <CardTitle>Current Positions</CardTitle>
-                <CardDescription>
-                    All your current holdings with live market data
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <TransactionsTable columns={positionsColumns} data={positions || []}/>
-            </CardContent>
-        </Card>
-    )
-
+        return (
+            <Card>
+                <CardHeader>
+                    <CardTitle>Current Positions</CardTitle>
+                    <CardDescription>
+                        All your current holdings with live market data
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <TransactionsTable
+                        columns={positionsColumns}
+                        data={positions}
+                    />
+                </CardContent>
+            </Card>
+        )
+    }
 
     return (
         <div className="p-6 space-y-6">
