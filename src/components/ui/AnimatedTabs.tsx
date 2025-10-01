@@ -14,9 +14,11 @@ type AnimatedTabsProps = {
     tabs: TabItem[]
     defaultValue?: string
     className?: string
+    classNameContent?: string
+    onValueChange?: (value: string) => void
 }
 
-export function AnimatedTabs({ tabs, defaultValue, className }: AnimatedTabsProps) {
+export function AnimatedTabs({ tabs, defaultValue, className, classNameContent, onValueChange }: AnimatedTabsProps) {
     const [value, setValue] = React.useState(defaultValue ?? tabs[0]?.value)
     const listRef = React.useRef<HTMLDivElement>(null)
 
@@ -27,6 +29,11 @@ export function AnimatedTabs({ tabs, defaultValue, className }: AnimatedTabsProp
     }
 
     const [indicator, setIndicator] = React.useState({ left: 0, width: 0 })
+
+    const handleValueChange = (newValue: string) => {
+        setValue(newValue)
+        onValueChange?.(newValue)
+    }
 
     const updateIndicator = React.useCallback(() => {
         const trigger = itemRefs.current.get(value)
@@ -48,7 +55,7 @@ export function AnimatedTabs({ tabs, defaultValue, className }: AnimatedTabsProp
     }, [value, updateIndicator])
 
     return (
-        <Tabs value={value} onValueChange={setValue} className={className}>
+        <Tabs value={value} onValueChange={handleValueChange} className={`min-w-0 ${className}`}>
             <div className="relative w-full">
                 <TabsList
                     ref={listRef as React.RefObject<HTMLDivElement>}
@@ -59,7 +66,7 @@ export function AnimatedTabs({ tabs, defaultValue, className }: AnimatedTabsProp
                             key={t.value}
                             ref={setItemRef(t.value)}
                             value={t.value}
-                            className="relative z-10 rounded-full px-3 py-1 flex-1"
+                            className="relative z-10 rounded-full py-1 flex-1"
                         >
                             {t.label}
                         </TabsTrigger>
@@ -68,13 +75,13 @@ export function AnimatedTabs({ tabs, defaultValue, className }: AnimatedTabsProp
                     <motion.div
                         className="absolute top-1 bottom-1 rounded-full bg-background"
                         animate={{ left: indicator.left, width: indicator.width }}
-                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        transition={{ type: "tween", duration: 0.2 }}
                     />
                 </TabsList>
             </div>
 
             {tabs.map((t) => (
-                <TabsContent key={t.value} value={t.value} className="mt-4">
+                <TabsContent key={t.value} value={t.value} className={`mt-4 ${classNameContent}`}>
                     {t.content}
                 </TabsContent>
             ))}

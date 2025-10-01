@@ -1,9 +1,12 @@
-export enum TransactionType {
-    BUY = "BUY",
-    SELL = "SELL",
-    DEPOSIT = "DEPOSIT",
-    WITHDRAW = "WITHDRAW",
-}
+// export enum TransactionType {
+//     BUY = "BUY",
+//     SELL = "SELL",
+//     DEPOSIT = "DEPOSIT",
+//     WITHDRAW = "WITHDRAW",
+// }
+
+export const transactionTypes = ["BUY", "SELL", "DEPOSIT", "WITHDRAW"] as const;
+export type TransactionType = typeof transactionTypes[number];
 
 export enum PositionType {
     EQUITY = "EQUITY",
