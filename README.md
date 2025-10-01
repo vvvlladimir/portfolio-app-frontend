@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Portfolio App Frontend
 
-## Getting Started
+Frontend web application for investment portfolio management and analysis, built with modern Next.js 15 technology stack.
 
-First, run the development server:
+## Project Description
+
+This application is a frontend interface for an investment portfolio management system.
+
+⚠️ **Warning**: The project is under development and does not provide a fully functional application at this time.
+
+### Main Functional Modules:
+
+- **Portfolio** - portfolio value dynamics visualization with interactive charts
+- **Transactions** - trading operations and current positions management
+- **Analytics** - tools for investment performance analysis
+
+### Technology Stack:
+
+- **Framework**: Next.js 15 with App Router
+- **UI**: React 19, Tailwind CSS, Radix UI components
+- **Charts**: Recharts for data visualization
+- **Forms**: React Hook Form with Zod validation
+- **State**: Zustand for state management
+- **Tables**: TanStack Table for data handling
+- **Animations**: Framer Motion
+
+## Related Repositories
+
+**Backend API**: [portfolio-app](https://github.com/vvvlladimir/portfolio-app)  
+*Server-side application providing API for portfolio data management*
+
+## Installation and Setup
 
 ```bash
+# Clone repository
+git clone https://github.com/username/portfolio-app-frontend.git
+cd portfolio-app-frontend
+
+# Install dependencies
+npm install
+
+# Run in development mode
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Application will be available at [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Requirements
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Node.js 18+
+- npm or yarn
+- Running backend server
