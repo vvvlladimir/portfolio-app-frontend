@@ -8,6 +8,11 @@ interface LiveTickerProps {
     className?: string
 }
 
+export function getDayChange(row: Position, live?: LiveTicker) {
+    return live?.change != null
+        ? live.change * row.shares
+        : row.market_daily_return_pct * row.position_value
+}
 
 export const DayChangeCell = ({ row, className }: LiveTickerProps) => {
     const original = row.original
@@ -16,11 +21,7 @@ export const DayChangeCell = ({ row, className }: LiveTickerProps) => {
     return (
         <ProfitBadge
             className={className}
-            value={
-                live?.change != null
-                    ? live.change * original.shares
-                    : original.market_daily_return_pct * original.position_value
-            }
+            value={getDayChange(original, live)}
             percent={live?.changePercent ?? original.market_daily_return_pct}
             currency={original.ticker_info.currency}
         />

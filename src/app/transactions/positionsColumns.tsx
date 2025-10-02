@@ -17,9 +17,10 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {MoreHorizontal} from "lucide-react";
-import {DayChangeCell, TotalReturnCell} from "@/components/layout/LiveTickerCell";
+import {DayChangeCell, getDayChange, TotalReturnCell} from "@/components/layout/LiveTickerCell";
 import React from "react";
 import {DataTableColumnHeader} from "@/components/layout/DataTableColumnHeader";
+import {LiveTicker, useTickerData, useTickerStore} from "@/stores/useTickerStore";
 
 export const positionsColumns: ColumnDef<Position>[] = [
     {
@@ -84,7 +85,9 @@ export const positionsColumns: ColumnDef<Position>[] = [
     },
     {
         accessorKey: "position_value",
-        header: () => <div className="">Position Value</div>,
+        header: ({ column }) => {
+            return <DataTableColumnHeader column={column} title="Position Value"/>
+        },
         cell: ({ row }) => {
             const data = parseFloat(row.getValue("position_value"))
             const tickerInfo = row.original.ticker_info
@@ -94,7 +97,9 @@ export const positionsColumns: ColumnDef<Position>[] = [
     },
     {
         accessorKey: "price",
-        header: () => <div className="">Price</div>,
+        header: ({ column }) => {
+            return <DataTableColumnHeader column={column} title="Price"/>
+        },
         cell: ({ row }) => {
             const data = parseFloat(row.getValue("price"))
             const tickerInfo = row.original.ticker_info
@@ -103,8 +108,15 @@ export const positionsColumns: ColumnDef<Position>[] = [
         }
     },
     {
-        accessorKey: "day_change",
-        header: () => <div className="text-right">Day Change</div>,
+        //    TODO: change to use live data from websocket
+        id: "day_change",
+        accessorFn: (row) => {
+            const live = useTickerStore.getState().liveData[row.ticker]
+            return getDayChange(row, live);
+        },
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Day Change" className="text-right" />
+        ),
         cell: ({ row }) => {
             return (
                 <div className={"text-right"}>
@@ -118,13 +130,14 @@ export const positionsColumns: ColumnDef<Position>[] = [
     },
     {
         accessorKey: "total_pnl",
-        header: () => <div className="text-right">Total Return</div>,
+        header: ({ column }) => {
+            return <DataTableColumnHeader column={column} title="Total Return" className={"text-right"}/>
+        },
         cell: ({ row }) => {
             return (
                 <div className={"text-right"}>
                     <TotalReturnCell
                         row={row}
-                        className="text-right"
                     />
                 </div>
             )

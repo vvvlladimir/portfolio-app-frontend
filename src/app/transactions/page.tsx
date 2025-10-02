@@ -6,7 +6,6 @@ import {
     CardAction,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
@@ -115,6 +114,7 @@ export default function TransactionsPage() {
                     <TransactionsTable
                         columns={transactionsColumns}
                         data={transactions}
+                        defaultSorting={[{ id: "date", desc: true }]}
                     />
                 </CardContent>
             </Card>

@@ -16,6 +16,8 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {MoreHorizontal} from "lucide-react";
+import {DataTableColumnHeader} from "@/components/layout/DataTableColumnHeader";
+import React from "react";
 
 export const transactionsColumns: ColumnDef<Transaction>[] = [
     {
@@ -41,15 +43,7 @@ export const transactionsColumns: ColumnDef<Transaction>[] = [
     {
         accessorKey: "date",
         header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    Date
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-            )
+            return <DataTableColumnHeader column={column} title="Date"/>
         },
         cell: ({ row }) => {
             const data = row.getValue("date") as string
@@ -59,7 +53,9 @@ export const transactionsColumns: ColumnDef<Transaction>[] = [
     },
     {
         accessorKey: "ticker",
-        header: () => <div className="">Symbol</div>,
+        header: ({ column }) => {
+            return <DataTableColumnHeader column={column} title="Symbol"/>
+        },
         cell: ({ row }) => {
             const data = String(row.getValue("ticker"))
             const tickerInfo = row.original.ticker_info
@@ -73,8 +69,11 @@ export const transactionsColumns: ColumnDef<Transaction>[] = [
         }
     },
     {
-        accessorKey: "type",
-        header: () => <div className="">Type</div>,
+        accessorFn: (row) => row.ticker_info.asset_type,
+        id: "type",
+        header: ({ column }) => {
+            return <DataTableColumnHeader column={column} title="Type"/>
+        },
         cell: ({ row }) => {
             const data = row.getValue("type") as BadgeVariant
 
@@ -83,7 +82,9 @@ export const transactionsColumns: ColumnDef<Transaction>[] = [
     },
     {
         accessorKey: "shares",
-        header: () => <div className="">Shares</div>,
+        header: ({ column }) => {
+            return <DataTableColumnHeader column={column} title="Shares"/>
+        },
         cell: ({ row }) => {
             const data = parseFloat(row.getValue("shares"))
 
@@ -91,8 +92,11 @@ export const transactionsColumns: ColumnDef<Transaction>[] = [
         }
     },
     {
-        accessorKey: "price",
-        header: () => <div className="text-right">Price</div>,
+        accessorFn: (row) => parseFloat(String(row.value)) / parseFloat(String(row.shares)),
+        id: "price",
+        header: ({ column }) => {
+            return <DataTableColumnHeader column={column} title="Price" className="text-right"/>
+        },
         cell: ({ row }) => {
             const data = parseFloat(row.getValue("value")) / parseFloat(row.getValue("shares"))
             const currency = row.original.currency as string
@@ -102,7 +106,9 @@ export const transactionsColumns: ColumnDef<Transaction>[] = [
     },
     {
         accessorKey: "value",
-        header: () => <div className="text-right">Total</div>,
+        header: ({ column }) => {
+            return <DataTableColumnHeader column={column} title="Total" className="text-right"/>
+        },
         cell: ({ row }) => {
             const data = parseFloat(row.getValue("value"))
             const currency = row.original.currency as string

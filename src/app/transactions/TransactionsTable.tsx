@@ -23,16 +23,17 @@ import { Button } from "@/components/ui/button"
 
 
 interface DataTableProps<TData, TValue> {
-
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
+    defaultSorting?: SortingState
 }
 
 export function TransactionsTable<TData, TValue>({
                                              columns,
                                              data,
+                                             defaultSorting = [],
                                          }: DataTableProps<TData, TValue>) {
-    const [sorting, setSorting] = React.useState<SortingState>([])
+    const [sorting, setSorting] = React.useState<SortingState>(defaultSorting)
     const [rowSelection, setRowSelection] = React.useState({})
     const table = useReactTable({
         data,
@@ -45,7 +46,7 @@ export function TransactionsTable<TData, TValue>({
         state: {
             sorting,
             rowSelection,
-        }
+        },
     })
 
     return (

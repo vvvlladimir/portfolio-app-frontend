@@ -94,6 +94,5 @@ export const useTickerStore = create<TickerStore>((set) => {
     }
 })
 
-// Селектор: подписка только на один тикер
 export const useTickerData = (ticker: string) =>
     useTickerStore((state) => state.liveData[ticker])
