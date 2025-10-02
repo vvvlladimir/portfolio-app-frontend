@@ -18,6 +18,9 @@ import {useTickerStore} from "@/stores/useTickerStore"
 import {transactionsColumns} from "@/app/transactions/transactionsColumns";
 import {positionsColumns} from "@/app/transactions/positionsColumns";
 import {UpdateTransactions} from "@/components/dialogs/updateTransactions";
+import {Button} from "@/components/ui/button";
+import {exportToCSV} from "@/lib/csv";
+import {Download} from "lucide-react";
 
 
 export default function TransactionsPage() {
@@ -56,7 +59,14 @@ export default function TransactionsPage() {
                         <CardDescription>
                             No transactions found. Upload your CSV to get started.
                         </CardDescription>
-                        <CardAction>
+                        <CardAction className={"flex gap-x-1"}>
+                            <Button
+                                onClick={() => exportToCSV(transactions || [], "transactions.csv")}
+                                disabled={!transactions?.length}
+                                className={"order-5"}
+                            >
+                                <Download/>
+                            </Button>
                             <UpdateTransactions
                                 onOpenChange={setTransOpen}
                                 open={transOpen}
@@ -77,7 +87,15 @@ export default function TransactionsPage() {
                     <CardDescription>
                         All your buy and sell transactions
                     </CardDescription>
-                    <CardAction>
+
+                    <CardAction className={"flex gap-x-1"}>
+                        <Button
+                            onClick={() => exportToCSV(transactions || [], "transactions.csv")}
+                            disabled={!transactions?.length}
+                            className={"order-5"}
+                        >
+                            <Download/>
+                        </Button>
                         <UpdateTransactions
                             onOpenChange={setTransOpen}
                             open={transOpen}
@@ -103,6 +121,15 @@ export default function TransactionsPage() {
                         <CardDescription>
                             No positions available. Upload your transactions first.
                         </CardDescription>
+                        <CardAction className={"flex gap-x-1"}>
+                            <Button
+                                onClick={() => exportToCSV(positions || [], "positions.csv")}
+                                disabled={!transactions?.length}
+                                className={"order-5"}
+                            >
+                                <Download/>
+                            </Button>
+                        </CardAction>
                     </CardHeader>
                     <CardContent className="flex items-center justify-center py-10">
                         <p className="text-gray-500">Waiting for your first upload…</p>
@@ -118,6 +145,15 @@ export default function TransactionsPage() {
                     <CardDescription>
                         All your current holdings with live market data
                     </CardDescription>
+                    <CardAction className={"flex gap-x-1"}>
+                        <Button
+                            onClick={() => exportToCSV(positions || [], "positions.csv")}
+                            disabled={!transactions?.length}
+                            className={"order-5"}
+                        >
+                            <Download/>
+                        </Button>
+                    </CardAction>
                 </CardHeader>
                 <CardContent>
                     <TransactionsTable
@@ -129,6 +165,19 @@ export default function TransactionsPage() {
         )
     }
 
+    const tabs = [
+        {
+            value: "history",
+            label: "Transaction History",
+            content: <TransactionsBlock />
+        },
+        {
+            value: "positions",
+            label: "Current Positions",
+            content: <PositionsBlock />
+        },
+    ]
+
     return (
         <div className="p-6 space-y-6">
             <header>
@@ -137,12 +186,7 @@ export default function TransactionsPage() {
             </header>
 
             <div className="">
-                <AnimatedTabs
-                    tabs={[
-                        { value: "history", label: "Transaction History", content: <TransactionsBlock /> },
-                        { value: "positions", label: "Current Positions", content: <PositionsBlock /> },
-                    ]}
-                />
+                <AnimatedTabs tabs={tabs}/>
             </div>
         </div>
     )

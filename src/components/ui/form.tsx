@@ -15,6 +15,13 @@ import {
 
 import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { AlertCircle } from "lucide-react"
 
 const Form = FormProvider
 
@@ -135,25 +142,41 @@ function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
   )
 }
 
-function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
+function FormMessage({ className, asTooltip = false, ...props }: React.ComponentProps<"p"> & { asTooltip?: boolean }) {
   const { error, formMessageId } = useFormField()
-  const body = error ? String(error?.message ?? "") : props.children
+  const body = error ? String(error?.message ?? "") : null
 
   if (!body) {
-    return null
+    return asTooltip ? props.children : null
+  }
+
+  if (asTooltip) {
+    return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              {props.children || <div className="w-full h-full" />}
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className={cn("text-sm", className)}>{body}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+    )
   }
 
   return (
-    <p
-      data-slot="form-message"
-      id={formMessageId}
-      className={cn("text-destructive text-sm", className)}
-      {...props}
-    >
-      {body}
-    </p>
+      <p
+          data-slot="form-message"
+          id={formMessageId}
+          className={cn("text-destructive text-sm", className)}
+          {...props}
+      >
+        {body}
+      </p>
   )
 }
+
 
 export {
   useFormField,

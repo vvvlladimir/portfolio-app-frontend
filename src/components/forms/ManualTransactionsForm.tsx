@@ -1,6 +1,7 @@
 "use client";
 
-import { useForm, useFieldArray } from "react-hook-form";
+import React from "react";
+import {useForm, useFieldArray, Resolver} from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -8,30 +9,51 @@ import {
     FormField,
     FormItem,
     FormControl,
-    FormLabel,
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import {
+    Select,
+    SelectTrigger,
+    SelectValue,
+    SelectContent,
+    SelectItem,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import {TransactionType, transactionTypes} from "@/types/schemas";
-import {TypeBadge} from "@/components/ui/TypeBadge" ;
-import {CalendarIcon, X} from 'lucide-react';
-import { Calendar } from "../ui/calendar";
-import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
-import {cn} from "@/lib/utils";
-import React from "react";
+import { TransactionType, transactionTypes } from "@/types/schemas";
+import { X } from "lucide-react";
+import {CalendarWithInput} from "@/components/ui/CalendarWithInput";
 
+export const transactionSchema = z.object({
+    date: z
+        .date()
+        .refine((val) => val instanceof Date && !isNaN(val.getTime()), {
+            message: "Date is required and must be valid",
+        }),
 
+    symbol: z
+        .string()
+        .min(1, { message: "Symbol is required" })
+        .max(10, { message: "Symbol too long (max. 10 characters)" }),
 
-const transactionSchema = z.object({
-    date: z.date({ message: "Date is required" }),
-    symbol: z.string().nonempty({ message: "Symbol is required" }),
-    type: z.enum(transactionTypes, { message: "Type is required" }),
-    shares: z.number().min(0.0000001, { message: "Shares must be > 0" }),
-    value: z.number().min(0.0000001, { message: "Value must be > 0" }),
-    currency: z.string().nonempty({ message: "Currency is required" }),
+    type: z
+        .enum(transactionTypes)
+        .refine((val) => transactionTypes.includes(val), {
+            message: "Invalid transaction type",
+        }),
+
+    shares: z.coerce.number()
+        .refine((val) => val > 0, { message: "Shares must be greater than 0" }),
+
+    value: z.coerce.number()
+        .refine((val) => val > 0, { message: "Value must be greater than 0" }),
+
+    currency: z
+        .string()
+        .min(1, { message: "Currency is required" })
+        .length(3, { message: "Currency must be exactly 3 characters (e.g. EUR)" }),
 });
+
 
 const formSchema = z.object({
     transactions: z.array(transactionSchema).min(1, { message: "At least one transaction" }),
@@ -45,19 +67,20 @@ interface Props {
 
 export function ManualTransactionsForm({ onSubmit }: Props) {
     const form = useForm<FormSchema>({
-        resolver: zodResolver(formSchema),
+        resolver: zodResolver(formSchema) as Resolver<FormSchema>,
         defaultValues: {
             transactions: [
                 {
-                    date: undefined as unknown as Date,
+                    date: new Date(),
                     symbol: "",
                     type: "BUY" as TransactionType,
-                    shares: undefined as unknown as number,
-                    value: undefined as unknown as number,
+                    shares: 1,
+                    value: 1,
                     currency: "",
                 },
             ],
         },
+        mode: "onBlur",
     });
 
     const { fields, append, remove } = useFieldArray({
@@ -67,7 +90,7 @@ export function ManualTransactionsForm({ onSubmit }: Props) {
 
     const handleAdd = () => {
         append({
-            date: undefined as unknown as Date,
+            date: new Date(),
             symbol: "",
             type: "BUY" as TransactionType,
             shares: 0,
@@ -76,23 +99,14 @@ export function ManualTransactionsForm({ onSubmit }: Props) {
         });
     };
 
-    const handleRemove = (index: number) => {
-        remove(index);
-    };
+    const handleRemove = (index: number) => remove(index);
 
-    const onFormSubmit = (data: FormSchema) => {
-        onSubmit(data);
-    };
-
-    const [open, setOpen] = React.useState(false)
+    const onFormSubmit = (data: FormSchema) => onSubmit(data);
 
     return (
         <Form {...form}>
-            <form
-                onSubmit={form.handleSubmit(onFormSubmit)}
-                className="space-y-4"
-            >
-                <div className="grid grid-cols-[repeat(6,1fr)_0.3fr] gap-2  font-medium">
+            <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-4">
+                <div className="grid grid-cols-[repeat(6,1fr)_0.3fr] gap-2 font-medium">
                     <div>Date</div>
                     <div>Symbol</div>
                     <div>Type</div>
@@ -103,91 +117,58 @@ export function ManualTransactionsForm({ onSubmit }: Props) {
 
                 {fields.map((field, index) => (
                     <div key={field.id} className="grid grid-cols-[repeat(6,1fr)_0.3fr] gap-2 items-end">
+
+                        {/* Date */}
                         <FormField
                             control={form.control}
                             name={`transactions.${index}.date`}
                             render={({ field }) => (
                                 <FormItem>
-                                    {/*<Input*/}
-                                    {/*    id="date"*/}
-                                    {/*    value={field.value}*/}
-                                    {/*    className="bg-background pr-10"*/}
-                                    {/*    onChange={(e) => {*/}
-                                    {/*        const dateValue = parseDate(e.target.value)*/}
-                                    {/*        field.onChange(dateValue);*/}
-                                    {/*    }}*/}
-                                    {/*    onKeyDown={(e) => {*/}
-                                    {/*        if (e.key === "ArrowDown") {*/}
-                                    {/*            e.preventDefault()*/}
-                                    {/*            setOpen(true)*/}
-                                    {/*        }*/}
-                                    {/*    }}*/}
-                                    {/*/>*/}
-                                    <Popover open={open} onOpenChange={setOpen}>
-                                        <PopoverTrigger asChild>
-                                            <FormControl>
-                                                <Button
-                                                    variant="outline"
-                                                    className={cn(
-                                                        "",
-                                                        !field.value && "text-muted-foreground"
-                                                    )}
-                                                >
-                                                    {field.value ? (
-                                                        field.value.toLocaleDateString()
-                                                    ) : (
-                                                        <span>Pick a date</span>
-                                                    )}
-                                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                </Button>
-                                            </FormControl>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="" align="start">
-                                            <Calendar
-                                                mode="single"
-                                                selected={field.value || undefined}
-                                                onSelect={field.onChange}>
-                                            </Calendar>
-                                        </PopoverContent>
-                                    </Popover>
-                                    <FormMessage />
+                                    <FormMessage asTooltip>
+                                        <FormControl>
+                                            <CalendarWithInput
+                                                value={field.value as Date}
+                                                onChange={(d) => field.onChange(d)}
+                                                placeholder="dd.mm.yyyy"
+                                            />
+                                        </FormControl>
+                                    </FormMessage>
                                 </FormItem>
                             )}
                         />
 
+                        {/* SYMBOL */}
                         <FormField
                             control={form.control}
                             name={`transactions.${index}.symbol`}
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormControl>
-                                        <Input {...field} />
-                                    </FormControl>
-                                    <FormMessage />
+                                    <FormMessage asTooltip>
+                                        <FormControl>
+                                            <Input {...field} />
+                                        </FormControl>
+                                    </FormMessage>
                                 </FormItem>
+
                             )}
                         />
 
+                        {/* TYPE */}
                         <FormField
                             control={form.control}
                             name={`transactions.${index}.type`}
                             render={({ field }) => (
                                 <FormItem>
                                     <FormControl>
-                                        <Select
-                                            value={field.value}
-                                            onValueChange={field.onChange}
-                                        >
-                                            <SelectTrigger className={"w-full min-w-0"}>
+                                        <Select value={field.value} onValueChange={field.onChange}>
+                                            <SelectTrigger className="w-full min-w-0">
                                                 <SelectValue/>
                                             </SelectTrigger>
                                             <SelectContent>
                                                 {transactionTypes.map((t) => (
                                                     <SelectItem key={t} value={t}>
-                                                        {/*<TypeBadge data={t}/>*/}
                                                         {t}
                                                     </SelectItem>
-
                                                 ))}
                                             </SelectContent>
                                         </Select>
@@ -197,60 +178,62 @@ export function ManualTransactionsForm({ onSubmit }: Props) {
                             )}
                         />
 
+                        {/* SHARES */}
                         <FormField
                             control={form.control}
                             name={`transactions.${index}.shares`}
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormControl>
-                                        <Input
-                                            type="number"
-                                            step="any"
-                                            {...field}
-                                            onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
+                                    <FormMessage asTooltip>
+                                        <FormControl>
+                                            <Input
+                                                type="number"
+                                                step="any"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                    </FormMessage>
                                 </FormItem>
                             )}
                         />
 
+                        {/* VALUE */}
                         <FormField
                             control={form.control}
                             name={`transactions.${index}.value`}
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormControl>
-                                        <Input
-                                            type="number"
-                                            step="any"
-                                            {...field}
-                                            onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
+                                    <FormMessage asTooltip>
+                                        <FormControl>
+                                            <Input
+                                                type="number"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                    </FormMessage>
                                 </FormItem>
                             )}
                         />
 
+                        {/* CURRENCY */}
                         <FormField
                             control={form.control}
                             name={`transactions.${index}.currency`}
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormControl>
-                                        <Input {...field} />
-                                    </FormControl>
-                                    <FormMessage />
+                                    <FormMessage asTooltip>
+                                        <FormControl>
+                                            <Input
+                                                type="text"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                    </FormMessage>
                                 </FormItem>
                             )}
                         />
 
-                        <Button
-                            type="button"
-                            variant="destructive"
-                            onClick={() => handleRemove(index)}
-                        >
+                        <Button type="button" variant="destructive" onClick={() => handleRemove(index)}>
                             <X/>
                         </Button>
                     </div>
@@ -260,6 +243,7 @@ export function ManualTransactionsForm({ onSubmit }: Props) {
                     <Button type="button" variant="outline" onClick={handleAdd}>
                         + Add Transaction
                     </Button>
+                    {/*<Button type="submit">Submit</Button>*/}
                 </div>
             </form>
         </Form>

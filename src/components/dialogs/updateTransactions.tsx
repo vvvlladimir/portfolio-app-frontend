@@ -9,18 +9,19 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import {AlertCircle, FileText, Upload} from "lucide-react"
+import {AlertCircle, Download, FileText, Upload} from "lucide-react"
 import React, {useState} from "react"
 import {Card, CardContent} from "@/components/ui/card"
 import {Alert, AlertDescription} from "@/components/ui/alert"
 import { Loader2, CheckCircle, XCircle } from "lucide-react"
-import {validateCSV} from "@/lib/validateCSV"
+import {validateCSV, exportToCSV} from "@/lib/csv"
 import {AnimatedTabs} from "@/components/ui/AnimatedTabs";
 import {FormSchema, ManualTransactionsForm} from "@/components/forms/ManualTransactionsForm";
+import {Transaction} from "@/types/schemas";
 
 interface UploadTransactionsDialogProps {
     open: boolean
-    onOpenChange: (open: boolean) => void
+    onOpenChange: (open: boolean) => void,
 }
 
 const csvHeaders = ["Date", "Ticker", "Type", "Shares", "Value", "Currency"]
@@ -233,6 +234,7 @@ export function UpdateTransactions({ open, onOpenChange }: UploadTransactionsDia
                         </Button>
                     </DialogClose>
                     <Button
+                        type="submit"
                         onClick={handleUpload}
                         disabled={!selectedFile}
                     >
@@ -250,7 +252,7 @@ export function UpdateTransactions({ open, onOpenChange }: UploadTransactionsDia
             <form>
                 <DialogTrigger asChild>
                     <Button variant="outline">
-                        <Upload className="w-4 h-4 mr-2 inline" />
+                        <Upload/>
                         Upload Transactions
                     </Button>
                 </DialogTrigger>
