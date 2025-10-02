@@ -9,107 +9,44 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import {AlertCircle, Download, FileText, Upload} from "lucide-react"
+import {AlertCircle, FileText, Upload} from "lucide-react"
 import React, {useState} from "react"
 import {Card, CardContent} from "@/components/ui/card"
 import {Alert, AlertDescription} from "@/components/ui/alert"
 import { Loader2, CheckCircle, XCircle } from "lucide-react"
-import {validateCSV, exportToCSV} from "@/lib/csv"
 import {AnimatedTabs} from "@/components/ui/AnimatedTabs";
-import {FormSchema, ManualTransactionsForm} from "@/components/forms/ManualTransactionsForm";
-import {Transaction} from "@/types/schemas";
+import {ManualTransactionsForm} from "@/components/forms/ManualTransactionsForm";
+import { useUpload } from "@/hooks/useUpload";
+import { TransactionsFormData } from "@/services/transactionService";
+import {useSWRConfig} from "swr";
 
 interface UploadTransactionsDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void,
 }
 
-const csvHeaders = ["Date", "Ticker", "Type", "Shares", "Value", "Currency"]
+export function UpdateTransactions({open, onOpenChange }: UploadTransactionsDialogProps) {
+    const [activeTab, setActiveTab] = useState<string>("csv")
+    const { mutate } = useSWRConfig()
 
+    const {
+        status,
+        selectedFile,
+        dragActive,
+        error,
+        handleDragEvents,
+        handleFileDrop,
+        handleFileSelect,
+        uploadTransactions,
+        resetUpload
 
-export function UpdateTransactions({ open, onOpenChange }: UploadTransactionsDialogProps) {
-    const [error, setError] = useState<string | null>(null)
-    const [dragActive, setDragActive] = useState(false)
-    const [selectedFile, setSelectedFile] = useState<File | null>(null)
+    } = useUpload(() => {
+        mutate("http://localhost:8000/portfolio/transactions")
+        mutate("http://localhost:8000/portfolio/last-positions")
 
-    const handleDrag = (e: React.DragEvent) => {
-        e.preventDefault()
-        e.stopPropagation()
-        if (e.type === "dragenter" || e.type === "dragover") {
-            setDragActive(true)
-        } else if (e.type === "dragleave") {
-            setDragActive(false)
-        }
-    }
+        onOpenChange(false)
+    })
 
-    const handleFile = async (file: File) => {
-        if (file.type === "text/csv" || file.name.endsWith(".csv")) {
-            try {
-                await validateCSV(file, csvHeaders)
-                setSelectedFile(file)
-                setError(null)
-            } catch (err: unknown) {
-                setError((err as Error)?.message || "CSV validation failed")
-                setSelectedFile(null)
-            }
-        } else {
-            setError("File should be in CSV format")
-            setSelectedFile(null)
-        }
-    }
-
-    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            handleFile(e.target.files[0])
-        }
-    }
-
-    const handleDrop = (e: React.DragEvent) => {
-        e.preventDefault()
-        e.stopPropagation()
-        setDragActive(false)
-
-        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-            handleFile(e.dataTransfer.files[0])
-        }
-    }
-
-    const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
-    const handleUpload = async () => {
-        if (!selectedFile) return
-
-        try {
-            setStatus("loading")
-
-            const formData = new FormData()
-            formData.append("file", selectedFile)
-
-            const response = await fetch("http://localhost:8000/upload/csv", {
-                method: "POST",
-                body: formData,
-            })
-
-            if (!response.ok) {
-                const data = await response.json()
-                throw new Error(data.message || "Upload failed")
-            }
-
-            // const result = await response.json()
-            // console.log("✅ Uploaded:", result)
-
-            setStatus("success")
-            setError(null)
-
-            setTimeout(() => {
-                setSelectedFile(null)
-                onOpenChange(false)
-                setStatus("idle")
-            }, 1000)
-        } catch (err: unknown) {
-            setError((err as Error)?.message || "Unexpected error")
-            setStatus("error")
-        }
-    }
     const CSVBlock = () => {
         return (
             <>
@@ -124,10 +61,10 @@ export function UpdateTransactions({ open, onOpenChange }: UploadTransactionsDia
                     : selectedFile
                         ? "border-green-500 bg-green-50 dark:bg-green-950"
                         : "border-muted-foreground/25 hover:border-muted-foreground/50"}`}
-                onDragEnter={handleDrag}
-                onDragLeave={handleDrag}
-                onDragOver={handleDrag}
-                onDrop={handleDrop}
+                onDragEnter={handleDragEvents}
+                onDragLeave={handleDragEvents}
+                onDragOver={handleDragEvents}
+                onDrop={handleFileDrop}
             >
                 <CardContent className="flex flex-col items-center justify-center py-8 text-center">
                     {selectedFile ? (
@@ -187,7 +124,7 @@ export function UpdateTransactions({ open, onOpenChange }: UploadTransactionsDia
                         type="button"
                         variant="outline"
                         onClick={() => {
-                            setSelectedFile(null)
+                            resetUpload()
                             onOpenChange(false)
                         }}
                     >
@@ -195,10 +132,10 @@ export function UpdateTransactions({ open, onOpenChange }: UploadTransactionsDia
                     </Button>
                 </DialogClose>
                 <Button
-                    onClick={handleUpload}
-                    disabled={!selectedFile}
+                    onClick={() => uploadTransactions(selectedFile!)}
+                    disabled={!selectedFile || status === "loading"}
                 >
-                    Upload Transactions
+                    {status === "loading" ? "Uploading..." : "Upload Transactions"}
                 </Button>
             </DialogFooter>
             </>
@@ -206,9 +143,10 @@ export function UpdateTransactions({ open, onOpenChange }: UploadTransactionsDia
     }
 
     const ManualBlock = () => {
-        const handleManualSubmit = (data: FormSchema) => {
-            console.log("Manual data:", data);
+        const handleManualFormSubmit = (data: TransactionsFormData) => {
+            uploadTransactions(data);
         };
+
         return (
             <>
                 <DialogHeader>
@@ -218,7 +156,14 @@ export function UpdateTransactions({ open, onOpenChange }: UploadTransactionsDia
                     </DialogDescription>
                 </DialogHeader>
 
-                <ManualTransactionsForm onSubmit={handleManualSubmit} />
+                <ManualTransactionsForm onSubmit={handleManualFormSubmit} />
+
+                {error && (
+                    <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4"/>
+                        <AlertDescription className="text-sm">{error}</AlertDescription>
+                    </Alert>
+                )}
 
                 <DialogFooter>
                     <DialogClose asChild>
@@ -226,7 +171,7 @@ export function UpdateTransactions({ open, onOpenChange }: UploadTransactionsDia
                             type="button"
                             variant="outline"
                             onClick={() => {
-                                setSelectedFile(null)
+                                resetUpload()
                                 onOpenChange(false)
                             }}
                         >
@@ -235,20 +180,18 @@ export function UpdateTransactions({ open, onOpenChange }: UploadTransactionsDia
                     </DialogClose>
                     <Button
                         type="submit"
-                        onClick={handleUpload}
-                        disabled={!selectedFile}
+                        form="manual-transactions-form"
+                        disabled={status === "loading"}
                     >
-                        Upload Transactions
+                        {status === "loading" ? "Submitting..." : "Upload Transactions"}
                     </Button>
                 </DialogFooter>
             </>
         )
     }
 
-    const [activeTab, setActiveTab] = useState<string>("csv")
-
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={onOpenChange}>
             <form>
                 <DialogTrigger asChild>
                     <Button variant="outline">

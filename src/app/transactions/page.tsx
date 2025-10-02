@@ -21,17 +21,26 @@ import {UpdateTransactions} from "@/components/dialogs/updateTransactions";
 import {Button} from "@/components/ui/button";
 import {exportToCSV} from "@/lib/csv";
 import {Download} from "lucide-react";
+import {fetcher} from "@/lib/swrFetcher";
 
 
 export default function TransactionsPage() {
     const [transOpen, setTransOpen] = useState(false)
 
     const { data: transactions, error: txError, isLoading: txLoading } = useSWR<Transaction[]>(
-        "http://localhost:8000/portfolio/transactions"
+        "http://localhost:8000/portfolio/transactions",
+        fetcher,
+        {
+            shouldRetryOnError: false,
+        }
     )
 
     const { data: positions, error: posError, isLoading: posLoading } = useSWR<Position[]>(
-        "http://localhost:8000/portfolio/last-positions"
+        "http://localhost:8000/portfolio/last-positions",
+        fetcher,
+        {
+            shouldRetryOnError: false,
+        }
     )
 
     const tickers = React.useMemo(() => {
