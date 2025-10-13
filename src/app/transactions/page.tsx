@@ -8,19 +8,20 @@ import {
     CardDescription,
     CardHeader,
     CardTitle,
-} from "@/components/ui/card"
-import { TransactionsTable } from "@/app/transactions/TransactionsTable"
-import { Transaction, Position } from "@/types/schemas"
-import { AnimatedTabs } from "@/components/ui/AnimatedTabs"
+} from "@/shared/components/ui/card"
+import { DataTable } from "@/shared/components/tables/DataTable"
+import { Transaction} from "@/shared/types/transaction"
+import { Position } from "@/shared/types/position"
+import { AnimatedTabs } from "@/shared/components/ui/AnimatedTabs"
 import React, {useEffect, useState} from "react";
-import {useTickerStore} from "@/stores/useTickerStore"
+import {useTickerStore} from "@/shared/stores/useTickerStore"
 import {transactionsColumns} from "@/app/transactions/transactionsColumns";
 import {positionsColumns} from "@/app/transactions/positionsColumns";
-import {UpdateTransactions} from "@/components/dialogs/updateTransactions";
-import {Button} from "@/components/ui/button";
-import {exportToCSV} from "@/lib/csv";
+import {UpdateTransactionsDialog} from "@/shared/components/dialogs/UpdateTransactionsDialog";
+import {Button} from "@/shared/components/ui/button";
+import {exportToCSV} from "@/shared/lib/csv";
 import {Download} from "lucide-react";
-import {fetcher} from "@/lib/swrFetcher";
+import {fetcher} from "@/shared/lib/swrFetcher";
 
 
 export default function TransactionsPage() {
@@ -76,7 +77,7 @@ export default function TransactionsPage() {
                             >
                                 <Download/>
                             </Button>
-                            <UpdateTransactions
+                            <UpdateTransactionsDialog
                                 onOpenChange={setTransOpen}
                                 open={transOpen}
                             />
@@ -105,14 +106,14 @@ export default function TransactionsPage() {
                         >
                             <Download/>
                         </Button>
-                        <UpdateTransactions
+                        <UpdateTransactionsDialog
                             onOpenChange={setTransOpen}
                             open={transOpen}
                         />
                     </CardAction>
                 </CardHeader>
                 <CardContent>
-                    <TransactionsTable
+                    <DataTable
                         columns={transactionsColumns}
                         data={transactions}
                         defaultSorting={[{ id: "date", desc: true }]}
@@ -166,7 +167,7 @@ export default function TransactionsPage() {
                     </CardAction>
                 </CardHeader>
                 <CardContent>
-                    <TransactionsTable
+                    <DataTable
                         columns={positionsColumns}
                         data={positions}
                     />

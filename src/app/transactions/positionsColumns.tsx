@@ -1,11 +1,11 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
 
-import {Position} from "@/types/schemas";
-import {formatData, formatDate} from "@/lib/formatData";
-import {BadgeVariant, TypeBadge} from "@/components/ui/TypeBadge";
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import {Position} from "@/shared/types/position";
+import {formatData, formatDate} from "@/shared/lib/formatData";
+import {BadgeVariant, TypeBadge} from "@/shared/components/ui/TypeBadge";
+import { Button } from "@/shared/components/ui/button"
+import { Checkbox } from "@/shared/components/ui/checkbox"
 
 
 import {
@@ -15,12 +15,12 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/shared/components/ui/dropdown-menu"
 import {MoreHorizontal} from "lucide-react";
-import {DayChangeCell, getDayChange, TotalReturnCell} from "@/components/layout/LiveTickerCell";
+import {DayChangeCell, getDayChange, TotalReturnCell} from "@/shared/components/layout/LiveTickerCell";
 import React from "react";
-import {DataTableColumnHeader} from "@/components/layout/DataTableColumnHeader";
-import {LiveTicker, useTickerData, useTickerStore} from "@/stores/useTickerStore";
+import {DataTableColumnHeader} from "@/shared/components/layout/DataTableColumnHeader";
+import {LiveTicker, useTickerData, useTickerStore} from "@/shared/stores/useTickerStore";
 
 export const positionsColumns: ColumnDef<Position>[] = [
     {

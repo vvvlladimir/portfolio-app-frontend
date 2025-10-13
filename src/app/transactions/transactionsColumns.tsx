@@ -1,10 +1,10 @@
 import { ColumnDef } from "@tanstack/react-table"
 
-import {Transaction} from "@/types/schemas";
-import {formatData, formatDate} from "@/lib/formatData";
-import {BadgeVariant, TypeBadge} from "@/components/ui/TypeBadge";
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import {Transaction} from "@/shared/types/transaction";
+import {formatData, formatDate} from "@/shared/lib/formatData";
+import {BadgeVariant, TypeBadge} from "@/shared/components/ui/TypeBadge";
+import { Button } from "@/shared/components/ui/button"
+import { Checkbox } from "@/shared/components/ui/checkbox"
 
 import {
     DropdownMenu,
@@ -13,9 +13,9 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/shared/components/ui/dropdown-menu"
 import {MoreHorizontal} from "lucide-react";
-import {DataTableColumnHeader} from "@/components/layout/DataTableColumnHeader";
+import {DataTableColumnHeader} from "@/shared/components/layout/DataTableColumnHeader";
 import React from "react";
 
 export const transactionsColumns: ColumnDef<Transaction>[] = [

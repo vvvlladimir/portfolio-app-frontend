@@ -1,7 +1,7 @@
 "use client"
 
 import { SWRConfig } from "swr"
-import { fetcher } from "@/lib/swrFetcher"
+import { fetcher } from "@/shared/lib/swrFetcher"
 
 export function Providers({ children }: { children: React.ReactNode }) {
     return (
