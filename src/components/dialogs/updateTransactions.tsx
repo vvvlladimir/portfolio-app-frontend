@@ -41,8 +41,8 @@ export function UpdateTransactions({open, onOpenChange }: UploadTransactionsDial
         resetUpload
 
     } = useUpload(() => {
-        mutate("http://localhost:8000/portfolio/transactions")
-        mutate("http://localhost:8000/portfolio/last-positions")
+        mutate("http://localhost:8000/transactions/?include_ticker_info=true")
+        mutate("http://localhost:8000/positions/snapshot")
 
         onOpenChange(false)
     })

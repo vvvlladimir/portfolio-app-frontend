@@ -84,31 +84,31 @@ export const positionsColumns: ColumnDef<Position>[] = [
         }
     },
     {
-        accessorKey: "position_value",
+        id: "value",
+        accessorFn: (row) => (row.close * row.shares),
         header: ({ column }) => {
             return <DataTableColumnHeader column={column} title="Position Value"/>
         },
         cell: ({ row }) => {
-            const data = parseFloat(row.getValue("position_value"))
+            const data = parseFloat(row.getValue("close")) * parseFloat(row.getValue("shares"))
             const tickerInfo = row.original.ticker_info
 
             return <div className="font-mono tabular-nums">{formatData(data, tickerInfo.currency)}</div>
         }
     },
     {
-        accessorKey: "price",
+        accessorKey: "close",
         header: ({ column }) => {
             return <DataTableColumnHeader column={column} title="Price"/>
         },
         cell: ({ row }) => {
-            const data = parseFloat(row.getValue("price"))
+            const data = parseFloat(row.getValue("close"))
             const tickerInfo = row.original.ticker_info
 
             return <div className="font-mono tabular-nums">{formatData(data, tickerInfo.currency)}</div>
         }
     },
     {
-        //    TODO: change to use live data from websocket
         id: "day_change",
         accessorFn: (row) => {
             const live = useTickerStore.getState().liveData[row.ticker]

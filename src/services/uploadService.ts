@@ -16,7 +16,7 @@ export interface FileValidationResult {
 
 export class UploadService {
   private static readonly CSV_HEADERS = ["Date", "Ticker", "Type", "Shares", "Value", "Currency"];
-  private static readonly UPLOAD_ENDPOINT = "http://localhost:8000/upload/csv";
+  private static readonly UPLOAD_ENDPOINT = "http://localhost:8000/upload/transactions/csv";
 
 
   static async validateCSVFile(file: File): Promise<FileValidationResult> {

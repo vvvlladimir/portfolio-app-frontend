@@ -35,9 +35,9 @@ export interface Position {
     date: string
     ticker: string
     shares: number
-    price: number
-    position_value: number
-    market_daily_return_pct: number
+    close: number
+    gross_invested: number
+    gross_withdrawn: number
     total_pnl: number
     ticker_info: {
         currency: string,

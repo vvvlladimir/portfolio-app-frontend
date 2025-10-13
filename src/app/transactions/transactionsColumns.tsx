@@ -1,5 +1,4 @@
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown } from "lucide-react"
 
 import {Transaction} from "@/types/schemas";
 import {formatData, formatDate} from "@/lib/formatData";
@@ -69,8 +68,7 @@ export const transactionsColumns: ColumnDef<Transaction>[] = [
         }
     },
     {
-        accessorFn: (row) => row.ticker_info.asset_type,
-        id: "type",
+        accessorKey: "type",
         header: ({ column }) => {
             return <DataTableColumnHeader column={column} title="Type"/>
         },

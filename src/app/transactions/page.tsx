@@ -27,7 +27,7 @@ export default function TransactionsPage() {
     const [transOpen, setTransOpen] = useState(false)
 
     const { data: transactions, error: txError, isLoading: txLoading } = useSWR<Transaction[]>(
-        "http://localhost:8000/portfolio/transactions",
+        "http://localhost:8000/transactions/?include_ticker_info=true",
         fetcher,
         {
             shouldRetryOnError: false,
@@ -35,12 +35,13 @@ export default function TransactionsPage() {
     )
 
     const { data: positions, error: posError, isLoading: posLoading } = useSWR<Position[]>(
-        "http://localhost:8000/portfolio/last-positions",
+        "http://localhost:8000/positions/snapshot",
         fetcher,
         {
             shouldRetryOnError: false,
         }
     )
+    console.log(positions)
 
     const tickers = React.useMemo(() => {
         if (!positions) return []
@@ -67,7 +68,7 @@ export default function TransactionsPage() {
                         <CardDescription>
                             No transactions found. Upload your CSV to get started.
                         </CardDescription>
-                        <CardAction className={"flex gap-x-1"}>
+                        <CardAction className={"flex gap-x-2"}>
                             <Button
                                 onClick={() => exportToCSV(transactions || [], "transactions.csv")}
                                 disabled={!transactions?.length}
@@ -96,7 +97,7 @@ export default function TransactionsPage() {
                         All your buy and sell transactions
                     </CardDescription>
 
-                    <CardAction className={"flex gap-x-1"}>
+                    <CardAction className={"flex gap-x-2"}>
                         <Button
                             onClick={() => exportToCSV(transactions || [], "transactions.csv")}
                             disabled={!transactions?.length}
@@ -130,7 +131,7 @@ export default function TransactionsPage() {
                         <CardDescription>
                             No positions available. Upload your transactions first.
                         </CardDescription>
-                        <CardAction className={"flex gap-x-1"}>
+                        <CardAction className={"flex gap-x-2"}>
                             <Button
                                 onClick={() => exportToCSV(positions || [], "positions.csv")}
                                 disabled={!transactions?.length}
@@ -154,7 +155,7 @@ export default function TransactionsPage() {
                     <CardDescription>
                         All your current holdings with live market data
                     </CardDescription>
-                    <CardAction className={"flex gap-x-1"}>
+                    <CardAction className={"flex gap-x-2"}>
                         <Button
                             onClick={() => exportToCSV(positions || [], "positions.csv")}
                             disabled={!transactions?.length}
