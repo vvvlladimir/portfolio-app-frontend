@@ -22,13 +22,14 @@ import {Button} from "@/shared/components/ui/button";
 import {exportToCSV} from "@/shared/lib/csv";
 import {Download} from "lucide-react";
 import {fetcher} from "@/shared/lib/swrFetcher";
+import {API_CONFIG} from "@/config/api";
 
 
 export default function TransactionsPage() {
     const [transOpen, setTransOpen] = useState(false)
 
     const { data: transactions, error: txError, isLoading: txLoading } = useSWR<Transaction[]>(
-        "http://localhost:8000/transactions/?include_ticker_info=true",
+        API_CONFIG.endpoints.transactions.get({ include_ticker_info: true }),
         fetcher,
         {
             shouldRetryOnError: false,
@@ -36,7 +37,7 @@ export default function TransactionsPage() {
     )
 
     const { data: positions, error: posError, isLoading: posLoading } = useSWR<Position[]>(
-        "http://localhost:8000/positions/snapshot",
+        API_CONFIG.endpoints.positions.snapshot,
         fetcher,
         {
             shouldRetryOnError: false,

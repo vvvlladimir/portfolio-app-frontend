@@ -19,6 +19,7 @@ import {ManualTransactionsForm} from "@/shared/components/forms/ManualTransactio
 import { useUpload } from "@/shared/hooks/useUpload";
 import { TransactionsFormData } from "@/shared/services/transactionService";
 import {useSWRConfig} from "swr";
+import { API_CONFIG } from "@/config/api"
 
 interface UploadTransactionsDialogProps {
     open: boolean
@@ -41,8 +42,8 @@ export function UpdateTransactionsDialog({open, onOpenChange }: UploadTransactio
         resetUpload
 
     } = useUpload(() => {
-        mutate("http://localhost:8000/transactions/?include_ticker_info=true")
-        mutate("http://localhost:8000/positions/snapshot")
+        mutate(API_CONFIG.endpoints.transactions.get({ include_ticker_info: true }))
+        mutate(API_CONFIG.endpoints.positions.snapshot)
 
         onOpenChange(false)
     })

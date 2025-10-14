@@ -1,0 +1,13 @@
+# docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+services:
+  frontend:
+    build:
+      target: base
+    environment:
+      - NODE_ENV=development
+      - API_URL=http://backend:3000
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    command: npm run dev

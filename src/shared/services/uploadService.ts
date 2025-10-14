@@ -1,4 +1,5 @@
 import { validateCSV } from "@/shared/lib/csv";
+import { getApiUrl, API_CONFIG } from "@/config/api";
 
 export type UploadStatus = "idle" | "loading" | "success" | "error";
 
@@ -16,8 +17,6 @@ export interface FileValidationResult {
 
 export class UploadService {
   private static readonly CSV_HEADERS = ["Date", "Ticker", "Type", "Shares", "Value", "Currency"];
-  private static readonly UPLOAD_ENDPOINT = "http://localhost:8000/upload/transactions/csv";
-
 
   static async validateCSVFile(file: File): Promise<FileValidationResult> {
     try {
@@ -44,13 +43,14 @@ export class UploadService {
     }
   }
 
-
   static async uploadCSV(file: File): Promise<UploadResult> {
     try {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch(this.UPLOAD_ENDPOINT, {
+      const uploadUrl = getApiUrl(API_CONFIG.endpoints.transactions.upload);
+
+      const response = await fetch(uploadUrl, {
         method: "POST",
         body: formData,
       });
