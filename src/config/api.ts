@@ -13,7 +13,8 @@ export const API_CONFIG = {
           getApiUrl("/transactions", params),
     },
     positions:{
-        snapshot: "/positions/snapshot",
+      snapshot: (params?: QueryParams) =>
+          getApiUrl("/positions/snapshot", params),
     }
   },
 };

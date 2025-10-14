@@ -37,7 +37,7 @@ export default function TransactionsPage() {
     )
 
     const { data: positions, error: posError, isLoading: posLoading } = useSWR<Position[]>(
-        API_CONFIG.endpoints.positions.snapshot,
+        API_CONFIG.endpoints.positions.snapshot(),
         fetcher,
         {
             shouldRetryOnError: false,

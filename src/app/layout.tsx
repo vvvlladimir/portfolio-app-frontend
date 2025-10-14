@@ -2,6 +2,8 @@ import type { Metadata } from "next"
 import { Inter, JetBrains_Mono } from "next/font/google"
 import "./globals.css";
 import { Providers } from "./providers"
+import { SidebarProvider, SidebarTrigger } from "@/shared/components/ui/sidebar"
+import { AppSidebar } from "@/shared/components/app-sidebar"
 
 const inter = Inter({
     subsets: ["latin", "cyrillic"],
@@ -26,9 +28,13 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={`${inter.variable} ${jetbrains.variable} antialiased`}>
-                <main className="container mx-auto px-4">
+            <SidebarProvider>
+                <AppSidebar />
+                <main className="container mx-auto">
+                    <SidebarTrigger />
                     <Providers>{children}</Providers>
                 </main>
+            </SidebarProvider>
             </body>
         </html>
     )
