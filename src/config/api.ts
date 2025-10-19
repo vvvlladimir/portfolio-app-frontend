@@ -19,6 +19,8 @@ export const API_CONFIG = {
     portfolio:{
       history: (params?: QueryParams) =>
           getApiUrl("/portfolio/history", params),
+        weights: (params?: QueryParams) =>
+            getApiUrl("/portfolio/weights", params),
     }
   },
 };

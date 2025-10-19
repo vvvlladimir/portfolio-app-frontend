@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { Inter, JetBrains_Mono } from "next/font/google"
 import "./globals.css";
-import { Providers } from "./providers"
+import {Providers, TickerProvider} from "./providers"
 import {SidebarInset, SidebarProvider} from "@/shared/components/ui/sidebar"
 import { AppSidebar } from "@/shared/components/widgets/app-sidebar"
 import {Card} from "@/shared/components/ui/card";
@@ -30,7 +30,9 @@ export default function RootLayout({
             <SidebarProvider>
                 <AppSidebar />
                 <SidebarInset>
-                    <Providers>{children}</Providers>
+                    <Providers>
+                        <TickerProvider>{children}</TickerProvider>
+                    </Providers>
                 </SidebarInset>
             </SidebarProvider>
             </body>

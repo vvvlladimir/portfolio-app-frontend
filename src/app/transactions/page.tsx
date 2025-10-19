@@ -44,23 +44,6 @@ export default function TransactionsPage() {
             shouldRetryOnError: false,
         }
     )
-    // console.log(positions)
-
-    const tickers = React.useMemo(() => {
-        if (!positions) return []
-        return Array.from(new Set(positions.map((p) => p.ticker)))
-    }, [positions])
-
-
-    // tickers = ["AAPL", "TSLA", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "BRK-B", "JPM", "V"] // for demo purposes
-
-    const connect = useTickerStore((s) => s.connect)
-    const disconnect = useTickerStore((s) => s.disconnect)
-    useEffect(() => {
-        if (tickers.length) connect(tickers, 5)
-        return () => disconnect()
-    }, [connect, disconnect, tickers])
-
 
     const TransactionsBlock = () => {
         if (txError || !transactions?.length) {

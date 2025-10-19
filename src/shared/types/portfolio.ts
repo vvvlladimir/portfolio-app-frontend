@@ -1,4 +1,3 @@
-
 export interface Portfolio {
     currency: string
     history: {
@@ -10,4 +9,9 @@ export interface Portfolio {
         total_pnl: number,
         total_pnl_pct: number
     }
+}
+
+export interface PortfolioWeights {
+    ticker: string
+    weight: number
 }
