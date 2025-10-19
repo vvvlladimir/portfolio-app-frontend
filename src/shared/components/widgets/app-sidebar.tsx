@@ -65,39 +65,16 @@ const items = [
 
 export function AppSidebar() {
   const pathname = usePathname()
-  const {state} = useSidebar()
-
-
-  let header = <SidebarTrigger className={"size-14 w-full"}/>
-  let footer = null
-  if (state == "expanded"){
-    header = (
-        <>
-          <div className="p-2">
-            <h1 className="text-lg font-semibold">Portfolio Tracker</h1>
-            <p className="text-sm text-muted-foreground">Investment Management</p>
-          </div>
-        </>
-    )
-    footer = (
-        <>
-          <p>© 2025 Portfolio Tracker</p>
-          <p>Version 1.0.0</p>
-        </>
-    )
-  }
 
   return (
-      <Sidebar
-          variant="sidebar"
-          collapsible="icon"
-      >
+      <Sidebar variant="inset" collapsible="offcanvas" className="p-0">
         <SidebarContent>
           <SidebarGroup>
-            <SidebarHeader className={"p-0"}>
-              {header}
+            <SidebarHeader className={"pt-4 pb-4"}>
+              <div className="pb-2">
+                <h1 className="text-lg font-semibold">Portfolio Tracker</h1>
+              </div>
             </SidebarHeader>
-            <SidebarSeparator/>
             <SidebarGroupContent>
               <SidebarMenu>
                 {items.map((item) => {
@@ -108,7 +85,7 @@ export function AppSidebar() {
                         <SidebarMenuButton
                             asChild
                             isActive={isActive}
-                            className={"h-14 group-data-[collapsible=icon]:h-14"}
+                            className={"h-12 group-data-[collapsible=icon]:h-12 data-[active=true]:bg-black data-[active=true]:text-white"}
                         >
                           <Link href={item.url}>
                             <item.icon/>
@@ -122,7 +99,8 @@ export function AppSidebar() {
               </SidebarMenu>
             </SidebarGroupContent>
             <SidebarFooter className={"border-t border-muted text-xs text-muted-foreground"}>
-              {footer}
+              <p>© 2025 Portfolio Tracker</p>
+              <p>Version 1.0.0</p>
             </SidebarFooter>
           </SidebarGroup>
         </SidebarContent>

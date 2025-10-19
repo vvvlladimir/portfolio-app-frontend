@@ -15,6 +15,10 @@ export const API_CONFIG = {
     positions:{
       snapshot: (params?: QueryParams) =>
           getApiUrl("/positions/snapshot", params),
+    },
+    portfolio:{
+      history: (params?: QueryParams) =>
+          getApiUrl("/portfolio/history", params),
     }
   },
 };

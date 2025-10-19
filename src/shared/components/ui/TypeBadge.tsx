@@ -1,13 +1,14 @@
-import { TransactionType, PositionType } from "@/shared/types/position"
+import { cn } from "@/shared/lib/utils"
+import { PositionType } from "@/shared/types/position"
+import { TransactionType } from "@/shared/types/transaction"
+import { Badge } from "@/shared/components/ui/badge"
 
-// Union
 type TransactionTypeValues = `${TransactionType}`
 type PositionTypeValues = `${PositionType}`
 
 export type BadgeVariant = TransactionTypeValues | PositionTypeValues
 
-// Colors
-const badgeColors: Record<BadgeVariant, string> = {
+const badgeStyles: Record<BadgeVariant, string> = {
     // TransactionType
     BUY: "bg-green-100 dark:bg-green-700 text-green-700 dark:text-green-100",
     SELL: "bg-red-100 dark:bg-red-700 text-red-700 dark:text-red-100",
@@ -21,26 +22,31 @@ const badgeColors: Record<BadgeVariant, string> = {
 }
 
 const badgeLabels: Record<BadgeVariant, string> = {
-    // TransactionType
-    BUY: "BUY",
-    SELL: "SELL",
-    DEPOSIT: "DEPOSIT",
-    WITHDRAW: "WITHDRAW",
-
-    // PositionType
-    EQUITY: "STOCK",
+    BUY: "Buy",
+    SELL: "Sell",
+    DEPOSIT: "Deposit",
+    WITHDRAW: "Withdraw",
+    EQUITY: "Stock",
     ETF: "ETF",
-    CRYPTOCURRENCY: "CRYPTO",
+    CRYPTOCURRENCY: "Crypto",
 }
 
-export function TypeBadge({ data }: { data: BadgeVariant }) {
-    const colorClass =
-        badgeColors[data] ?? "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-100"
+interface TypeBadgeProps {
+    data: BadgeVariant
+    className?: string
+}
+
+export function TypeBadge({ data, className }: TypeBadgeProps) {
     const label = badgeLabels[data] ?? data
+    const colorClass =
+        badgeStyles[data] ?? "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-100"
 
     return (
-        <span className={`px-2 py-1 text-xs font-medium rounded ${colorClass}`}>
-      {label}
-    </span>
+        <Badge
+            variant="default"
+            className={cn(colorClass, className)}
+        >
+            {label}
+        </Badge>
     )
 }

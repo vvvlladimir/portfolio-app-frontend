@@ -9,7 +9,6 @@ export function formatData(value: number, currency?: string): string {
                 maximumFractionDigits: 2,
             }).format(value)
         } else {
-            // Если валюты нет → форматируем как просто число
             return new Intl.NumberFormat("en-US", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,

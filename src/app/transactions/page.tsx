@@ -23,6 +23,7 @@ import {exportToCSV} from "@/shared/lib/csv";
 import {Download} from "lucide-react";
 import {fetcher} from "@/shared/lib/swrFetcher";
 import {API_CONFIG} from "@/config/api";
+import {SiteHeader} from "@/shared/components/widgets/site-header";
 
 
 export default function TransactionsPage() {
@@ -43,7 +44,7 @@ export default function TransactionsPage() {
             shouldRetryOnError: false,
         }
     )
-    console.log(positions)
+    // console.log(positions)
 
     const tickers = React.useMemo(() => {
         if (!positions) return []
@@ -191,15 +192,11 @@ export default function TransactionsPage() {
     ]
 
     return (
-        <div className="p-6 space-y-6">
-            <header>
-                <h1 className="text-2xl sm:text-3xl font-bold">Transactions</h1>
-                <p className="text-gray-500 text-sm sm:text-base ">View your transaction history and current positions</p>
-            </header>
-
-            <div className="">
+        <main>
+            <SiteHeader headerTitle="Transactions"/>
+            <div className="gap-4 p-4">
                 <AnimatedTabs tabs={tabs}/>
             </div>
-        </div>
+        </main>
     )
 }
