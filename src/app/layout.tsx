@@ -22,16 +22,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
     children,
-}: {
-    children: React.ReactNode
-}) {
+}: { children: React.ReactNode }) {
     return (
         <html lang="en">
             <body className={`${inter.variable} ${jetbrains.variable} antialiased`}>
             <SidebarProvider>
                 <AppSidebar />
                 <main className="container mx-auto">
-                    <SidebarTrigger />
                     <Providers>{children}</Providers>
                 </main>
             </SidebarProvider>
