@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { motion } from "framer-motion"
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/components/ui/tabs"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/components/ui/shadcn/tabs"
 
 type TabItem = {
     value: string

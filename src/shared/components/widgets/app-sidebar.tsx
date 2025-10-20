@@ -20,7 +20,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem, SidebarSeparator, SidebarTrigger,
   useSidebar
-} from "@/shared/components/ui/sidebar"
+} from "@/shared/components/ui/shadcn/sidebar"
 import { usePathname } from 'next/navigation';
 import Link from "next/link";
 

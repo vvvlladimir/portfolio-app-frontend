@@ -1,4 +1,4 @@
-import { Button } from "@/shared/components/ui/button"
+import { Button } from "@/shared/components/ui/shadcn/button"
 import {
     Dialog,
     DialogClose,
@@ -8,11 +8,11 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from "@/shared/components/ui/dialog"
+} from "@/shared/components/ui/shadcn/dialog"
 import {AlertCircle, FileText, Upload} from "lucide-react"
 import React, {useState} from "react"
-import {Card, CardContent} from "@/shared/components/ui/card"
-import {Alert, AlertDescription} from "@/shared/components/ui/alert"
+import {Card, CardContent} from "@/shared/components/ui/shadcn/card"
+import {Alert, AlertDescription} from "@/shared/components/ui/shadcn/alert"
 import { Loader2, CheckCircle, XCircle } from "lucide-react"
 import {AnimatedTabs} from "@/shared/components/ui/AnimatedTabs";
 import {ManualTransactionsForm} from "@/shared/components/forms/ManualTransactionsForm";

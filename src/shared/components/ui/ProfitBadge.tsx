@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react"
 import { formatData } from "@/shared/lib/formatData"
+import { cn } from "@/shared/lib/utils"
 
 interface ProfitBadgeProps {
     value: number
@@ -12,24 +13,6 @@ interface ProfitBadgeProps {
 }
 
 export function ProfitBadge({ value, percent, currency, invested, className }: ProfitBadgeProps) {
-    const [highlight, setHighlight] = useState<string>("")
-    const prevValue = useRef<number>(value)
-
-    useEffect(() => {
-        if (value !== prevValue.current) {
-            if (value > prevValue.current) {
-                setHighlight("animate-highlightGreen")
-            } else {
-                setHighlight("animate-highlightRed")
-            }
-
-            prevValue.current = value
-
-            const timeout = setTimeout(() => setHighlight(""), 500)
-            return () => clearTimeout(timeout)
-        }
-    }, [value])
-
     const colorClass =
         value >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
 
@@ -42,9 +25,7 @@ export function ProfitBadge({ value, percent, currency, invested, className }: P
 
     return (
         <div
-            className={`font-mono tabular-nums text-sm transition-colors inline-block ${colorClass} ${
-                highlight
-            } ${className}`}
+            className={cn("font-mono tabular-nums text-sm transition-colors inline-block", {colorClass}, {className})}
         >
             <div>{formatData(value, currency)}</div>
             {computedPercent != null && (

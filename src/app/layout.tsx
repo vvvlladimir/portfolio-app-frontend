@@ -2,9 +2,9 @@ import type { Metadata } from "next"
 import { Inter, JetBrains_Mono } from "next/font/google"
 import "./globals.css";
 import {Providers, TickerProvider} from "./providers"
-import {SidebarInset, SidebarProvider} from "@/shared/components/ui/sidebar"
+import {SidebarInset, SidebarProvider} from "@/shared/components/ui/shadcn/sidebar"
 import { AppSidebar } from "@/shared/components/widgets/app-sidebar"
-import {Card} from "@/shared/components/ui/card";
+import {Card} from "@/shared/components/ui/shadcn/card";
 
 const inter = Inter({
     subsets: ["latin", "cyrillic"],

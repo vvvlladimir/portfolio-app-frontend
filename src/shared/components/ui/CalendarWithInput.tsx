@@ -1,10 +1,10 @@
 import React from "react";
 import {cn} from "@/shared/lib/utils";
-import {Input} from "@/shared/components/ui/input";
-import {Popover, PopoverContent, PopoverTrigger} from "@/shared/components/ui/popover";
-import {Button} from "@/shared/components/ui/button";
+import {Input} from "@/shared/components/ui/shadcn/input";
+import {Popover, PopoverContent, PopoverTrigger} from "@/shared/components/ui/shadcn/popover";
+import {Button} from "@/shared/components/ui/shadcn/button";
 import {CalendarIcon} from "lucide-react";
-import {Calendar} from "@/shared/components/ui/calendar";
+import {Calendar} from "@/shared/components/ui/shadcn/calendar";
 import {format, isValid, parse} from "date-fns";
 
 

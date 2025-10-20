@@ -18,8 +18,8 @@ import {
     TableRow,
     TableHead,
     TableCell,
-} from "@/shared/components/ui/table"
-import { Button } from "@/shared/components/ui/button"
+} from "@/shared/components/ui/shadcn/table"
+import { Button } from "@/shared/components/ui/shadcn/button"
 
 
 interface DataTableProps<TData, TValue> {

@@ -14,13 +14,13 @@ import {
 } from "react-hook-form"
 
 import { cn } from "@/shared/lib/utils"
-import { Label } from "@/shared/components/ui/label"
+import { Label } from "@/shared/components/ui/shadcn/label"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/shared/components/ui/tooltip"
+} from "@/shared/components/ui/shadcn/tooltip"
 import { AlertCircle } from "lucide-react"
 
 const Form = FormProvider

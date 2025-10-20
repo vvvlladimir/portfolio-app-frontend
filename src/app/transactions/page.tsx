@@ -8,7 +8,7 @@ import {
     CardDescription,
     CardHeader,
     CardTitle,
-} from "@/shared/components/ui/card"
+} from "@/shared/components/ui/shadcn/card"
 import { DataTable } from "@/shared/components/tables/DataTable"
 import { Transaction} from "@/shared/types/transaction"
 import { Position } from "@/shared/types/position"
@@ -18,7 +18,7 @@ import {useTickerStore} from "@/shared/stores/useTickerStore"
 import {transactionsColumns} from "@/app/transactions/transactionsColumns";
 import {positionsColumns} from "@/app/transactions/positionsColumns";
 import {UpdateTransactionsDialog} from "@/shared/components/dialogs/UpdateTransactionsDialog";
-import {Button} from "@/shared/components/ui/button";
+import {Button} from "@/shared/components/ui/shadcn/button";
 import {exportToCSV} from "@/shared/lib/csv";
 import {Download} from "lucide-react";
 import {fetcher} from "@/shared/lib/swrFetcher";

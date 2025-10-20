@@ -1,7 +1,7 @@
 import { cn } from "@/shared/lib/utils"
 import { PositionType } from "@/shared/types/position"
 import { TransactionType } from "@/shared/types/transaction"
-import { Badge } from "@/shared/components/ui/badge"
+import { Badge } from "@/shared/components/ui/shadcn/badge"
 
 type TransactionTypeValues = `${TransactionType}`
 type PositionTypeValues = `${PositionType}`

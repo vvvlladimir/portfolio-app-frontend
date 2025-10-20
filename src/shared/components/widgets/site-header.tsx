@@ -1,6 +1,6 @@
-import {SidebarTrigger} from "@/shared/components/ui/sidebar";
-import {Button} from "@/shared/components/ui/button";
-import {Separator} from "@/shared/components/ui/separator";
+import {SidebarTrigger} from "@/shared/components/ui/shadcn/sidebar";
+import {Button} from "@/shared/components/ui/shadcn/button";
+import {Separator} from "@/shared/components/ui/shadcn/separator";
 
 interface SiteHeaderProps {
     headerTitle?: string;

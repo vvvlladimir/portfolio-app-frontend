@@ -4,8 +4,8 @@ import { ArrowUpDown } from "lucide-react"
 import {Position} from "@/shared/types/position";
 import {formatData, formatDate} from "@/shared/lib/formatData";
 import {BadgeVariant, TypeBadge} from "@/shared/components/ui/TypeBadge";
-import { Button } from "@/shared/components/ui/button"
-import { Checkbox } from "@/shared/components/ui/checkbox"
+import { Button } from "@/shared/components/ui/shadcn/button"
+import { Checkbox } from "@/shared/components/ui/shadcn/checkbox"
 
 
 import {
@@ -15,7 +15,7 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "@/shared/components/ui/dropdown-menu"
+} from "@/shared/components/ui/shadcn/dropdown-menu"
 import {MoreHorizontal} from "lucide-react";
 import {DayChangeCell, getDayChange, TotalReturnCell} from "@/shared/components/layout/LiveTickerCell";
 import React from "react";

@@ -9,16 +9,16 @@ import {
     FormItem,
     FormControl,
     FormMessage,
-} from "@/shared/components/ui/form";
-import { Input } from "@/shared/components/ui/input";
+} from "@/shared/components/ui/shadcn/form";
+import { Input } from "@/shared/components/ui/shadcn/input";
 import {
     Select,
     SelectTrigger,
     SelectValue,
     SelectContent,
     SelectItem,
-} from "@/shared/components/ui/select";
-import { Button } from "@/shared/components/ui/button";
+} from "@/shared/components/ui/shadcn/select";
+import { Button } from "@/shared/components/ui/shadcn/button";
 import { X } from "lucide-react";
 import {CalendarWithInput} from "@/shared/components/ui/CalendarWithInput";
 import {

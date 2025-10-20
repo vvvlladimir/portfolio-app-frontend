@@ -1,10 +1,9 @@
 import { useMemo } from "react"
 import { useTickerStore } from "@/shared/stores/useTickerStore"
-import { Position } from "@/shared/types/position"
-import useSWR from "swr";
-import {API_CONFIG} from "@/config/api";
-import {fetcher} from "@/shared/lib/swrFetcher";
-import {PortfolioWeights} from "@/shared/types/portfolio";
+import useSWR from "swr"
+import { API_CONFIG } from "@/config/api"
+import { fetcher } from "@/shared/lib/swrFetcher"
+import { PortfolioWeights } from "@/shared/types/portfolio"
 
 export function usePortfolioChange() {
     const { data: weights } = useSWR<PortfolioWeights[]>(API_CONFIG.endpoints.portfolio.weights(), fetcher)
@@ -25,9 +24,11 @@ export function usePortfolioChange() {
             coveredWeight += weight
         })
 
-        if (coveredWeight === 0) return { totalChangePercent: 0, coveredWeight: 0 }
+        if (coveredWeight === 0) {
+            return { totalChangePercent: 0, coveredWeight: 0 }
+        }
 
-        const totalChangePercent = weightedSum
+        const totalChangePercent = weightedSum / coveredWeight
 
         return { totalChangePercent, coveredWeight }
     }, [weights, liveData])
