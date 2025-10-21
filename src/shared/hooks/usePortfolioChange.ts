@@ -11,7 +11,7 @@ export function usePortfolioChange() {
 
     return useMemo(() => {
         if (!weights?.length) {
-            return { totalChangePercent: 0, coveredWeight: 0 }
+            return { todayChangePercent: 0, coveredWeight: 0 }
         }
 
         let weightedSum = 0
@@ -25,11 +25,11 @@ export function usePortfolioChange() {
         })
 
         if (coveredWeight === 0) {
-            return { totalChangePercent: 0, coveredWeight: 0 }
+            return { todayChangePercent: 0, coveredWeight: 0 }
         }
 
-        const totalChangePercent = weightedSum / coveredWeight
+        const todayChangePercent = weightedSum / coveredWeight
 
-        return { totalChangePercent, coveredWeight }
+        return { todayChangePercent, coveredWeight }
     }, [weights, liveData])
 }

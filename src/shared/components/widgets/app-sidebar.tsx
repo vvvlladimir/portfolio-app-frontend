@@ -28,37 +28,37 @@ import Link from "next/link";
 const items = [
   {
     title: "Dashboard",
-    url: "dashboard",
+    url: "/",
     icon: LayoutDashboard,
   },
   {
     title: "Transactions",
-    url: "transactions",
+    url: "/transactions",
     icon: Receipt,
   },
   {
     title: "Analytics / Charts",
-    url: "analytics",
+    url: "/analytics",
     icon: BarChart3,
   },
   {
     title: "Diversification Settings",
-    url: "diversification",
+    url: "/diversification",
     icon: PieChart,
   },
   {
     title: "Reports",
-    url: "reports",
+    url: "/reports",
     icon: FileText,
   },
   {
     title: "Settings",
-    url: "settings",
+    url: "/settings",
     icon: Settings,
   },
   {
     title: 'Help',
-    url: 'help',
+    url: '/help',
     icon: HelpCircle,
   },
 ]
@@ -78,8 +78,10 @@ export function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu>
                 {items.map((item) => {
-                  const target = `/${item.url}`
-                  const isActive = pathname === target || pathname.startsWith(`${target}/`)
+                  const target = item.url
+                  const isActive =
+                      pathname === target || pathname.startsWith(`${target}/`);
+
                   return (
                       <SidebarMenuItem key={item.title}>
                         <SidebarMenuButton
@@ -87,7 +89,7 @@ export function AppSidebar() {
                             isActive={isActive}
                             className={"h-12 group-data-[collapsible=icon]:h-12 data-[active=true]:bg-black data-[active=true]:text-white"}
                         >
-                          <Link href={item.url}>
+                          <Link href={target}>
                             <item.icon/>
                             <span>{item.title}</span>
                           </Link>
