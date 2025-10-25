@@ -2,12 +2,6 @@
 
 import React from "react";
 import {SiteHeader} from "@/shared/components/widgets/site-header";
-import {
-    Card, CardAction,
-    CardDescription, CardFooter,
-    CardHeader,
-    CardTitle
-} from "@/shared/components/ui/shadcn/card";
 import {API_CONFIG} from "@/config/api";
 import {fetcher} from "@/shared/lib/swrFetcher";
 import useSWR from "swr";
@@ -16,15 +10,18 @@ import {formatData} from "@/shared/lib/formatData";
 import { ReturnBadge } from "@/shared/components/ui/ReturnBadge";
 import {usePortfolioChange} from "@/shared/hooks/usePortfolioChange";
 import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/shared/components/ui/shadcn/hover-card";
-import {cn} from "@/shared/lib/utils";
 import {useValueHighlight} from "@/shared/hooks/useValueHighlight";
 import {CustomChartArea} from "@/shared/components/widgets/charts/custom-chart-area";
+import {StatCard} from "@/shared/components/ui/StatCard";
+import {Position} from "@/shared/types/position";
 
 export default function DashboardPage() {
     const { data: portfolio } = useSWR<Portfolio>(
         API_CONFIG.endpoints.portfolio.history(),
         fetcher
     )
+    const currency = portfolio?.currency ?? "USD";
+
     const {todayChangePercent, coveredWeight} = usePortfolioChange()
 
     const lastValue =
@@ -50,110 +47,52 @@ export default function DashboardPage() {
             total_pnl_pct: (lastValue?.total_pnl_pct ?? 0) + todayChangePercent,
         }
         return [...portfolio.history, livePoint]
-    }, [portfolio?.history, todayChangePercent])
+    }, [lastValue?.total_pnl_pct, portfolio?.history, todayChangePercent])
 
     return (
         <main>
             <SiteHeader headerTitle="Dashboard"/>
 
             <div className="p-4 space-y-4">
-                <div className="grid gap-4
-            grid-cols-1
-            sm:grid-cols-2
-            md:grid-cols-3
-            lg:grid-cols-5
-            items-stretch
-            ">
-                    <Card className="@container/card p-4">
-                        <div className="flex items-center justify-between">
-                            <span className="text-sm text-muted-foreground">Today Return</span>
+                <div
+                    className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 items-stretch"
+                >
+                    <StatCard
+                        label="Today Return"
+                        tooltip={
                             <HoverCard>
                                 <HoverCardTrigger>
-                                    <ReturnBadge value={todayChangePercent}/>
+                                    <ReturnBadge value={todayChangePercent} />
                                 </HoverCardTrigger>
                                 <HoverCardContent className="text-sm w-48">
                                     Covered Weight: {(coveredWeight * 100).toFixed(2)}%
                                 </HoverCardContent>
                             </HoverCard>
-                        </div>
+                        }
+                        value={formatData(todayChange, currency)}
+                        titleClassName={highlight}
+                    />
 
-                        <div className="flex">
-                            <CardTitle
-                                className={cn(
-                                    "font-bold font-mono tabular-nums leading-tight text-2xl",
-                                    "truncate max-w-full", highlight
-                                )}
-                            >
-                                {formatData(todayChange, portfolio?.currency ?? "USD")}
-                            </CardTitle>
-                        </div>
-                    </Card>
-                    <Card className="@container/card p-4">
-                        <div className="flex items-center justify-between">
-                            <span className="text-sm text-muted-foreground">Total Return</span>
-                            <ReturnBadge value={(lastValue?.total_pnl_pct || 0) + todayChangePercent}/>
-                        </div>
+                    <StatCard
+                        label="Total Return"
+                        tooltip={<ReturnBadge value={(lastValue?.total_pnl_pct || 0) + todayChangePercent} />}
+                        value={formatData(totalReturn, currency)}
+                    />
 
-                        <div className="flex">
-                            <CardTitle
-                                className={cn(
-                                    "font-bold font-mono tabular-nums leading-tight text-2xl",
-                                    "truncate max-w-full"
-                                )}
-                            >
-                                {formatData(totalReturn, portfolio?.currency ?? "USD")}
-                            </CardTitle>
-                        </div>
-                    </Card>
-                    <Card className="@container/card p-4">
-                        <div className="flex items-center justify-between">
-                            <span className="text-sm text-muted-foreground">Total Portfolio Value</span>
-                        </div>
-                        <div className="flex">
-                            <CardTitle
-                                className={cn(
-                                    "font-bold font-mono tabular-nums leading-tight text-2xl",
-                                    "truncate max-w-full"
-                                )}
-                            >
-                                {formatData(
-                                    (lastValue?.total_value || 0) + todayChange, portfolio?.currency || "USD"
-                                )}
-                            </CardTitle>
-                        </div>
-                    </Card>
-                    <Card className="@container/card p-4">
-                        <div className="flex items-center justify-between">
-                            <span className="text-sm text-muted-foreground">Cash Available</span>
-                        </div>
-                        <div className="flex">
-                            <CardTitle
-                                className={cn(
-                                    "font-bold font-mono tabular-nums leading-tight text-2xl",
-                                    "truncate max-w-full"
-                                )}
-                            >
-                                {formatData(
-                                    3000, portfolio?.currency || "USD"
-                                )}
-                            </CardTitle>
-                        </div>
-                    </Card>
-                    <Card className="@container/card p-4">
-                        <div className="flex items-center justify-between">
-                            <span className="text-sm text-muted-foreground">Diversification</span>
-                        </div>
-                        <div className="flex">
-                            <CardTitle
-                                className={cn(
-                                    "font-bold font-mono tabular-nums leading-tight text-2xl",
-                                    "truncate max-w-full"
-                                )}
-                            >
-                                Well Balanced
-                            </CardTitle>
-                        </div>
-                    </Card>
+                    <StatCard
+                        label="Total Portfolio Value"
+                        value={formatData((lastValue?.total_value || 0) + todayChange, currency)}
+                    />
+
+                    <StatCard
+                        label="Cash Available"
+                        value={formatData(3000, currency)}
+                    />
+
+                    <StatCard
+                        label="Diversification"
+                        value="Well Balanced"
+                    />
                 </div>
 
                 {
@@ -164,14 +103,7 @@ export default function DashboardPage() {
                             title="Portfolio Performance"
                             description="Total Return"
                             gradient={true}
-                            timeRangeOptions={[
-                                {label: "1 Week", days: 7},
-                                {label: "1 Month", days: 30},
-                                {label: "3 Months", days: 90},
-                                {label: "6 Months", days: 180},
-                                {label: "1 Year", days: 365},
-                                {label: "All", days: "all"},
-                            ]}
+                            timeSelector={true}
                         />
                     )
                 }

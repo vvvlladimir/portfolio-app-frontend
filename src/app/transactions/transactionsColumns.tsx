@@ -62,7 +62,7 @@ export const transactionsColumns: ColumnDef<Transaction>[] = [
             return <div className="max-w-[15rem] truncate">
                         <div className="font-medium text-sm">{data}</div>
                         <div className="text-xs text-muted-foreground">
-                            {tickerInfo.long_name}
+                            {tickerInfo?.long_name}
                         </div>
                     </div>
         }

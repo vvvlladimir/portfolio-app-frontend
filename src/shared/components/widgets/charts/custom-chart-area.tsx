@@ -26,17 +26,15 @@ import {
     SelectValue,
 } from "@/shared/components/ui/shadcn/select"
 import { cn } from "@/shared/lib/utils"
-import {useEffect, useMemo, useState} from "react";
 
-interface ChartDataItem {
-    date: string
-    [key: string]: number | string
-}
-
-interface TimeRangeOption {
-    label: string
-    days?: number | "all"
-}
+const TimeRangeOptions = [
+    {label: "1 Week", days: 7},
+    {label: "1 Month", days: 30},
+    {label: "3 Months", days: 90},
+    {label: "6 Months", days: 180},
+    {label: "1 Year", days: 365},
+    {label: "All", days: null},
+]
 
 interface ChartAreaInteractiveProps<T extends { date: string }> {
     chartData: T[]
@@ -44,40 +42,38 @@ interface ChartAreaInteractiveProps<T extends { date: string }> {
     title?: string
     description?: string
     gradient?: boolean
+    timeSelector?: boolean
     className?: string
-    timeRangeOptions?: TimeRangeOption[]
-    defaultTimeRange?: number | "all"
+    defaultTimeRange?: number | null
 }
 
 export function CustomChartArea<T extends { date: string }>({
-                                                                     chartData,
-                                                                     chartConfig,
-                                                                     title = "Area Chart",
-                                                                     description = "Showing dynamic data",
-                                                                     gradient = false,
-                                                                     className,
-                                                                     timeRangeOptions,
-                                                                     defaultTimeRange = "all",
-                                                                 }: ChartAreaInteractiveProps<T>) {
-    const [currentRange, setCurrentRange] = React.useState<number | "all">(defaultTimeRange)
+                                                                chartData,
+                                                                chartConfig,
+                                                                title = "Area Chart",
+                                                                description = "Showing dynamic data",
+                                                                gradient = false,
+                                                                timeSelector = false,
+                                                                className,
+                                                                defaultTimeRange = null,
+                                                            }: ChartAreaInteractiveProps<T>) {
+    const [currentRange, setCurrentRange] = React.useState<number | null>(defaultTimeRange)
 
     const [selectedIndex, setSelectedIndex] = React.useState<number | null>(null)
 
     React.useEffect(() => {
-        setCurrentRange(defaultTimeRange)
-
-        if (timeRangeOptions && timeRangeOptions.length > 0) {
-            const matchIndex = timeRangeOptions.findIndex(
+        if (TimeRangeOptions && TimeRangeOptions.length > 0) {
+            const matchIndex = TimeRangeOptions.findIndex(
                 (opt) => opt.days === defaultTimeRange
             )
             setSelectedIndex(matchIndex >= 0 ? matchIndex : null)
         }
-    }, [defaultTimeRange, timeRangeOptions])
+    }, [defaultTimeRange])
 
     const filteredData = React.useMemo(() => {
         if (!chartData?.length) return []
 
-        if (currentRange === "all") return chartData
+        if (currentRange == null) return chartData
 
         const referenceDate = new Date(chartData[chartData.length - 1].date)
         const startDate = new Date(referenceDate)
@@ -87,9 +83,11 @@ export function CustomChartArea<T extends { date: string }>({
     }, [chartData, currentRange])
 
     const handleRangeChange = (index: string) => {
-        const option = timeRangeOptions?.[parseInt(index)]
-        setCurrentRange(option?.days ?? "all")
-        setSelectedIndex(parseInt(index))
+        const option = TimeRangeOptions?.[parseInt(index)]
+        if (option) {
+            setCurrentRange(option.days)
+            setSelectedIndex(parseInt(index))
+        }
     }
 
     return (
@@ -100,7 +98,7 @@ export function CustomChartArea<T extends { date: string }>({
                     <CardDescription>{description}</CardDescription>
                 </div>
 
-                {timeRangeOptions && timeRangeOptions.length > 0 && (
+                {timeSelector && (
                     <Select
                         onValueChange={handleRangeChange}
                         value={selectedIndex !== null ? String(selectedIndex) : undefined}
@@ -113,12 +111,12 @@ export function CustomChartArea<T extends { date: string }>({
                                 placeholder="Select range"
                             >
                                 {selectedIndex !== null
-                                    ? timeRangeOptions[selectedIndex]?.label
+                                    ? TimeRangeOptions[selectedIndex]?.label
                                     : undefined}
                             </SelectValue>
                         </SelectTrigger>
                         <SelectContent className="rounded-xl">
-                            {timeRangeOptions.map((option, index) => (
+                            {TimeRangeOptions.map((option, index) => (
                                 <SelectItem key={index} value={String(index)} className="rounded-lg">
                                     {option.label}
                                 </SelectItem>
@@ -213,3 +211,4 @@ export function CustomChartArea<T extends { date: string }>({
         </Card>
     )
 }
+
