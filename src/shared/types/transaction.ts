@@ -1,4 +1,4 @@
-import {PositionType} from "@/shared/types/position";
+import {Ticker} from "@/shared/types/ticker";
 
 export const transactionTypes = ["BUY", "SELL", "DEPOSIT", "WITHDRAW"] as const;
 export type TransactionType = typeof transactionTypes[number];
@@ -11,10 +11,5 @@ export interface Transaction {
     currency: string
     shares: number
     value: number
-    ticker_info: {
-        currency: string,
-        long_name: string,
-        exchange: string,
-        asset_type: PositionType
-    }
+    ticker_info?: Ticker
 }

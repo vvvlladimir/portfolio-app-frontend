@@ -1,7 +1,10 @@
 import {useState, useCallback} from "react"
-import {UploadService, UploadStatus, FileValidationResult, UploadResult} from "@/shared/services/uploadService"
 import {TransactionsFormData} from "@/shared/services/transactionService"
 import Papa from "papaparse"
+import {useTransactions} from "@/shared/api/queries/useTransactions"
+import {validateCSV} from "@/shared/lib/csv"
+
+export type UploadStatus = "idle" | "loading" | "success" | "error"
 
 export interface UseUploadState {
     status: UploadStatus
@@ -20,13 +23,16 @@ export interface UseUploadState {
 
 type UploadSource = File | TransactionsFormData
 
+const CSV_HEADERS = ["Date", "Ticker", "Type", "Shares", "Value", "Currency"]
+
 export function useUpload(onSuccess?: () => void): UseUploadState {
+    const { upload } = useTransactions()
+
     // Upload state
     const [status, setStatus] = useState<UploadStatus>("idle")
     const [selectedFile, setSelectedFile] = useState<File | null>(null)
     const [dragActive, setDragActive] = useState(false)
     const [error, setError] = useState<string | null>(null)
-
 
     const resetUpload = useCallback(() => {
         setStatus("idle")
@@ -37,13 +43,21 @@ export function useUpload(onSuccess?: () => void): UseUploadState {
 
     // Upload functions
     const handleFileValidation = useCallback(async (file: File) => {
-        const result: FileValidationResult = await UploadService.validateCSVFile(file)
+        try {
+            // Validation of file type
+            if (!file.type.includes("csv") && !file.name.endsWith(".csv")) {
+                setError("File should be in CSV format")
+                setSelectedFile(null)
+                return
+            }
 
-        if (result.isValid && result.file) {
-            setSelectedFile(result.file)
+            // Validate CSV structure
+            await validateCSV(file, CSV_HEADERS)
+
+            setSelectedFile(file)
             setError(null)
-        } else {
-            setError(result.error || "File validation failed")
+        } catch (err) {
+            setError((err as Error)?.message || "CSV validation failed")
             setSelectedFile(null)
         }
     }, [])
@@ -75,7 +89,6 @@ export function useUpload(onSuccess?: () => void): UseUploadState {
         }
     }, [handleFileValidation])
 
-
     const uploadTransactions = useCallback(async (source: UploadSource) => {
         try {
             setStatus("loading")
@@ -89,24 +102,20 @@ export function useUpload(onSuccess?: () => void): UseUploadState {
                 const blob = new Blob([csv], {type: "text/csv"})
                 file = new File([blob], "manual.csv", {type: "text/csv"})
             }
-            const result: UploadResult = await UploadService.uploadCSV(file)
 
-            if (result.success) {
-                setStatus("success")
-                setError(null)
-                setTimeout(() => {
-                    resetUpload()
-                    onSuccess?.()
-                }, 1000)
-            } else {
-                setStatus("error")
-                setError(result.message || "Upload failed")
-            }
+            await upload(file)
+
+            setStatus("success")
+            setError(null)
+            setTimeout(() => {
+                resetUpload()
+                onSuccess?.()
+            }, 1000)
         } catch (err) {
             setStatus("error")
             setError((err as Error)?.message || "Unexpected error")
         }
-    }, [onSuccess, resetUpload])
+    }, [upload, onSuccess, resetUpload])
 
     return {
         status,

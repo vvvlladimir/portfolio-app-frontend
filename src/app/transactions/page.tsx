@@ -11,42 +11,35 @@ import {
 } from "@/shared/components/ui/shadcn/card"
 import { DataTable } from "@/shared/components/tables/DataTable"
 import { Transaction} from "@/shared/types/transaction"
-import { Position } from "@/shared/types/position"
 import { AnimatedTabs } from "@/shared/components/ui/AnimatedTabs"
-import React, {useEffect, useState} from "react";
-import {useTickerStore} from "@/shared/stores/useTickerStore"
+import React, {useState} from "react";
 import {transactionsColumns} from "@/app/transactions/transactionsColumns";
 import {positionsColumns} from "@/app/transactions/positionsColumns";
 import {UpdateTransactionsDialog} from "@/shared/components/dialogs/UpdateTransactionsDialog";
 import {Button} from "@/shared/components/ui/shadcn/button";
 import {exportToCSV} from "@/shared/lib/csv";
 import {Download} from "lucide-react";
-import {fetcher} from "@/shared/lib/swrFetcher";
+import {fetcher} from "@/shared/api/client";
 import {API_CONFIG} from "@/config/api";
 import {SiteHeader} from "@/shared/components/widgets/site-header";
+import {usePositions} from "@/shared/api/queries/usePositions";
+import {useTransactions} from "@/shared/api/queries/useTransactions";
+import {useTickers} from "@/shared/api/queries/useTickers";
+import {joinByKey} from "@/shared/lib/utils";
 
 
 export default function TransactionsPage() {
     const [transOpen, setTransOpen] = useState(false)
 
-    const { data: transactions, error: txError, isLoading: txLoading } = useSWR<Transaction[]>(
-        API_CONFIG.endpoints.transactions.get({ include_ticker_info: true }),
-        fetcher,
-        {
-            shouldRetryOnError: false,
-        }
-    )
+    const {positions, isError: posError} = usePositions({get_last: true})
+    const {transactions, isError: transError} = useTransactions()
+    const {tickers} = useTickers()
 
-    const { data: positions, error: posError, isLoading: posLoading } = useSWR<Position[]>(
-        API_CONFIG.endpoints.positions.snapshot(),
-        fetcher,
-        {
-            shouldRetryOnError: false,
-        }
-    )
+    const positionsData = joinByKey(positions, tickers, "ticker", "ticker_info")
+    const transactionsData = joinByKey(transactions, tickers, "ticker", "ticker_info")
 
     const TransactionsBlock = () => {
-        if (txError || !transactions?.length) {
+        if (transError || !transactions?.length) {
             return (
                 <Card>
                     <CardHeader>
@@ -100,7 +93,7 @@ export default function TransactionsPage() {
                 <CardContent>
                     <DataTable
                         columns={transactionsColumns}
-                        data={transactions}
+                        data={transactionsData}
                         defaultSorting={[{ id: "date", desc: true }]}
                     />
                 </CardContent>
@@ -154,7 +147,7 @@ export default function TransactionsPage() {
                 <CardContent>
                     <DataTable
                         columns={positionsColumns}
-                        data={positions}
+                        data={positionsData}
                     />
                 </CardContent>
             </Card>

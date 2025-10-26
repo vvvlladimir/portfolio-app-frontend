@@ -56,15 +56,15 @@ export const transactionsColumns: ColumnDef<Transaction>[] = [
             return <DataTableColumnHeader column={column} title="Symbol"/>
         },
         cell: ({ row }) => {
-            const data = String(row.getValue("ticker"))
-            const tickerInfo = row.original.ticker_info
-
-            return <div className="max-w-[15rem] truncate">
-                        <div className="font-medium text-sm">{data}</div>
-                        <div className="text-xs text-muted-foreground">
-                            {tickerInfo?.long_name}
-                        </div>
+            const ticker = String(row.getValue("ticker"))
+            return (
+                <div className="max-w-[15rem] truncate">
+                    <div className="font-medium text-sm">{ticker}</div>
+                    <div className="text-xs text-muted-foreground">
+                        {row.original.ticker_info?.long_name || "—"}
                     </div>
+                </div>
+            )
         }
     },
     {
@@ -74,7 +74,6 @@ export const transactionsColumns: ColumnDef<Transaction>[] = [
         },
         cell: ({ row }) => {
             const data = row.getValue("type") as BadgeVariant
-
             return <TypeBadge data={data} />
         }
     },
@@ -85,7 +84,6 @@ export const transactionsColumns: ColumnDef<Transaction>[] = [
         },
         cell: ({ row }) => {
             const data = parseFloat(row.getValue("shares"))
-
             return <div className="font-mono tabular-nums">{data}</div>
         }
     },
@@ -97,9 +95,7 @@ export const transactionsColumns: ColumnDef<Transaction>[] = [
         },
         cell: ({ row }) => {
             const data = parseFloat(row.getValue("value")) / parseFloat(row.getValue("shares"))
-            const currency = row.original.currency as string
-
-            return <div className="font-mono tabular-nums text-right">{formatData(data, currency)}</div>
+            return <div className="font-mono tabular-nums text-right">{formatData(data, row.original.currency)}</div>
         }
     },
     {
@@ -109,9 +105,8 @@ export const transactionsColumns: ColumnDef<Transaction>[] = [
         },
         cell: ({ row }) => {
             const data = parseFloat(row.getValue("value"))
-            const currency = row.original.currency as string
+            return <div className="font-mono tabular-nums text-right">{formatData(data, row.original.currency)}</div>
 
-            return <div className="font-mono tabular-nums text-right">{formatData(data, currency)}</div>
         }
     },
 

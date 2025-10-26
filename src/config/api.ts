@@ -15,12 +15,19 @@ export const API_CONFIG = {
     positions:{
       snapshot: (params?: QueryParams) =>
           getApiUrl("/positions/snapshot", params),
+      refresh: "/positions/refresh",
     },
     portfolio:{
       history: (params?: QueryParams) =>
           getApiUrl("/portfolio/history", params),
-        weights: (params?: QueryParams) =>
-            getApiUrl("/portfolio/weights", params),
+      weights: (params?: QueryParams) =>
+          getApiUrl("/portfolio/weights", params),
+      refresh: "/portfolio/refresh",
+    },
+    tickers:{
+      get: (params?: QueryParams) =>
+          getApiUrl("/tickers", params),
+      refresh: "/tickers/refresh",
     }
   },
 };

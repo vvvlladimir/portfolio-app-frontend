@@ -18,8 +18,7 @@ import {AnimatedTabs} from "@/shared/components/ui/AnimatedTabs";
 import {ManualTransactionsForm} from "@/shared/components/forms/ManualTransactionsForm";
 import { useUpload } from "@/shared/hooks/useUpload";
 import { TransactionsFormData } from "@/shared/services/transactionService";
-import {useSWRConfig} from "swr";
-import { API_CONFIG } from "@/config/api"
+import { useTransactions } from "@/shared/api/queries/useTransactions";
 
 interface UploadTransactionsDialogProps {
     open: boolean
@@ -28,7 +27,7 @@ interface UploadTransactionsDialogProps {
 
 export function UpdateTransactionsDialog({open, onOpenChange }: UploadTransactionsDialogProps) {
     const [activeTab, setActiveTab] = useState<string>("csv")
-    const { mutate } = useSWRConfig()
+    const { refresh } = useTransactions()
 
     const {
         status,
@@ -42,9 +41,7 @@ export function UpdateTransactionsDialog({open, onOpenChange }: UploadTransactio
         resetUpload
 
     } = useUpload(() => {
-        mutate(API_CONFIG.endpoints.transactions.get({ include_ticker_info: true }))
-        mutate(API_CONFIG.endpoints.positions.snapshot)
-
+        refresh()
         onOpenChange(false)
     })
 
@@ -56,7 +53,8 @@ export function UpdateTransactionsDialog({open, onOpenChange }: UploadTransactio
                 <DialogDescription>
                     Upload a CSV file containing your transaction history to automatically populate your portfolio.
                 </DialogDescription>
-            </DialogHeader><Card
+            </DialogHeader>
+            <Card
                 className={`relative py-0 border-2 border-dashed transition-colors ${dragActive
                     ? "border-primary bg-primary/5"
                     : selectedFile

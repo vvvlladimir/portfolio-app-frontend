@@ -21,6 +21,10 @@ import {DayChangeCell, getDayChange, TotalReturnCell} from "@/shared/components/
 import React from "react";
 import {DataTableColumnHeader} from "@/shared/components/layout/DataTableColumnHeader";
 import {LiveTicker, useTickerData, useTickerStore} from "@/shared/stores/useTickerStore";
+import {ReturnBadge} from "@/shared/components/ui/ReturnBadge";
+import {useValueHighlight} from "@/shared/hooks/useValueHighlight";
+import {ProfitBadge} from "@/shared/components/ui/ProfitBadge";
+import {cn} from "@/shared/lib/utils";
 
 export const positionsColumns: ColumnDef<Position>[] = [
     {
@@ -50,12 +54,11 @@ export const positionsColumns: ColumnDef<Position>[] = [
         },
         cell: ({ row }) => {
             const data = String(row.getValue("ticker"))
-            const tickerInfo = row.original.ticker_info
 
             return <div className="max-w-[15rem] truncate">
                 <div className="font-medium text-sm">{data}</div>
                 <div className="text-xs text-muted-foreground">
-                    {tickerInfo.long_name}
+                    {row.original.ticker_info?.long_name}
                 </div>
             </div>
         }
@@ -67,8 +70,7 @@ export const positionsColumns: ColumnDef<Position>[] = [
             return <DataTableColumnHeader column={column} title="Type"/>
         },
         cell: ({ row }) => {
-            const data = row.original.ticker_info.asset_type as BadgeVariant
-
+            const data = row.original.ticker_info?.asset_type as BadgeVariant
             return <TypeBadge data={data} />
         }
     },
@@ -91,9 +93,7 @@ export const positionsColumns: ColumnDef<Position>[] = [
         },
         cell: ({ row }) => {
             const data = parseFloat(row.getValue("close")) * parseFloat(row.getValue("shares"))
-            const tickerInfo = row.original.ticker_info
-
-            return <div className="font-mono tabular-nums">{formatData(data, tickerInfo.currency)}</div>
+            return <div className="font-mono tabular-nums">{formatData(data, row.original.ticker_info?.currency)}</div>
         }
     },
     {
@@ -103,28 +103,41 @@ export const positionsColumns: ColumnDef<Position>[] = [
         },
         cell: ({ row }) => {
             const data = parseFloat(row.getValue("close"))
-            const tickerInfo = row.original.ticker_info
-
-            return <div className="font-mono tabular-nums">{formatData(data, tickerInfo.currency)}</div>
+            return <div className="font-mono tabular-nums">{formatData(data, row.original.ticker_info?.currency)}</div>
         }
     },
     {
         id: "day_change",
         accessorFn: (row) => {
-            const live = useTickerStore.getState().liveData[row.ticker]
-            return getDayChange(row, live);
+            const state = useTickerStore.getState()
+            const live = state.liveData[row.ticker]
+            return (live?.change ?? 0) * row.shares
         },
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Day Change" className="text-right" />
         ),
         cell: ({ row }) => {
-            return (
-                <div className={"text-right"}>
-                    <DayChangeCell
-                        row={row}
-                    />
-                </div>
+            const DayChangeCell = () => {
+                const original = row.original
+                const live = useTickerData(row.getValue("ticker")) as LiveTicker
+                const dayChange = ((live?.change || 0) * original.shares)
+                const highlight = useValueHighlight(dayChange)
 
+                return (
+                    <div className={cn("font-mono tabular-nums text-sm text-right")}>
+                        <div className={cn("inline-block", highlight, dayChange >= 0 ? "text-profit" : "text-loss")}>
+                            <p>
+                                {formatData(dayChange, row.original.ticker_info?.currency)}
+                            </p>
+                            <p className={"text-xs opacity-60"}>
+                                {(live?.changePercent || 0)?.toFixed(2)}%
+                            </p>
+                        </div>
+                    </div>
+                )
+            }
+            return (
+                <DayChangeCell/>
             )
         }
     },
@@ -134,12 +147,26 @@ export const positionsColumns: ColumnDef<Position>[] = [
             return <DataTableColumnHeader column={column} title="Total Return" className={"text-right"}/>
         },
         cell: ({ row }) => {
+            const TotalReturnCell = () => {
+                const original = row.original
+                const live = useTickerData(row.getValue("ticker")) as LiveTicker
+                const totalChange = original.total_pnl + ((live?.change || 0) * original.shares)
+                const totalChangePct = original.shares > 0 ? (totalChange / (original.shares * original.close) * 100) : 0
+                return (
+                    <div className={cn("font-mono tabular-nums text-sm text-right")}>
+                        <div className={cn("inline-block", totalChange >= 0 ? "text-profit" : "text-loss")}>
+                            <p>
+                                {formatData(totalChange, row.original.ticker_info?.currency)}
+                            </p>
+                            <p className={"text-xs opacity-60"}>
+                                {totalChangePct.toFixed(2)}%
+                            </p>
+                        </div>
+                    </div>
+                )
+            }
             return (
-                <div className={"text-right"}>
-                    <TotalReturnCell
-                        row={row}
-                    />
-                </div>
+                <TotalReturnCell/>
             )
         }
     },
