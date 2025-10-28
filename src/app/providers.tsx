@@ -25,15 +25,15 @@ export function Providers({ children }: { children: React.ReactNode }) {
 }
 
 function TickerProvider({ children }: { children: React.ReactNode }) {
-    const { positions, isLoading } = usePositions({ get_last: true })
+    const { positionsQuery, isLoading } = usePositions({ get_last: true })
 
     const connect = useTickerStore((state) => state.connect)
     const disconnect = useTickerStore((state) => state.disconnect)
 
     const tickers = useMemo(() => {
-        if (!positions.length) return []
-        return [...new Set(positions.map((p) => p.ticker))].sort()
-    }, [positions])
+        if (!positionsQuery.length) return []
+        return [...new Set(positionsQuery.map((p) => p.ticker))].sort()
+    }, [positionsQuery])
 
     useEffect(() => {
         if (isLoading) return

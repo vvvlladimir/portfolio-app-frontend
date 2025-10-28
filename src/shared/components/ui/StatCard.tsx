@@ -22,8 +22,8 @@ export function StatCard({ label, value, tooltip, className, titleClassName }: S
             </div>
 
             <div className="w-full flex items-center">
-                <CardTitle className={cn("w-full min-w-0 ", titleClassName)}>
-                    <FitTextSvg text={value} className="w-full h-10" textClassName={"font-bold font-mono! tabular-nums"} />
+                <CardTitle className={cn("min-w-0 rounded-sm", titleClassName)}>
+                    <FitTextSvg text={value} className="h-10" textClassName={cn("font-bold font-mono! tabular-nums")} />
                 </CardTitle>
             </div>
         </Card>

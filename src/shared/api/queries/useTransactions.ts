@@ -24,7 +24,7 @@ export function useTransactions({ params }: UseTransactionsOptions = {}) {
             const formData = new FormData()
             formData.append("file", file)
 
-            return fetcher<Transaction[]>(API_CONFIG.endpoints.transactions.upload, {
+            return fetcher<Transaction[]>(API_CONFIG.endpoints.transactions.upload(), {
                 method: "POST",
                 body: formData,
             })

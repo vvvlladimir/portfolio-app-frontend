@@ -1,4 +1,4 @@
-import {TransactionType} from "@/shared/types/transaction";
+import {Ticker} from "@/shared/types/ticker";
 
 export enum PositionType {
     EQUITY = "EQUITY",
@@ -14,10 +14,17 @@ export interface Position {
     gross_invested: number
     gross_withdrawn: number
     total_pnl: number
-    ticker_info: {
-        currency: string,
-        long_name: string,
-        exchange: string,
-        asset_type: PositionType
-    }
+    ticker_info: Ticker
+}
+
+export interface ReturnValue {
+    [period: string]: number | null
+}
+
+export interface StatsPosition {
+    percentReturn? : number
+    ticker: string
+    total_value: number
+    total_pnl: number
+    returns: ReturnValue
 }

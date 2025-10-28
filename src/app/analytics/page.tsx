@@ -9,7 +9,9 @@ import {Button} from "@/shared/components/ui/shadcn/button"
 import {StatCard} from "@/shared/components/ui/StatCard"
 import {sumField} from "@/shared/lib/utils"
 import {usePortfolio} from "@/shared/api/queries/usePortfolio";
-import {filterPortfolio} from "@/shared/lib/filterHistory";
+import {filterPortfolio, getSortedTickersByReturn} from "@/shared/lib/filter";
+import {usePositions} from "@/shared/api/queries/usePositions";
+import {AnimatedTabs} from "@/shared/components/ui/AnimatedTabs";
 
 const TIME_RANGES = [
   { label: "1W", days: 7 },
@@ -19,14 +21,39 @@ const TIME_RANGES = [
   { label: "1Y", days: 365 },
   { label: "ALL", days: 0 }
 ]
+type TimeRange = (typeof TIME_RANGES)[number]
 
 export default function AnalyticsPage() {
-  const [timeRange, setTimeRange] = useState(0)
+  const [timeRange, setTimeRange] = useState<TimeRange>(TIME_RANGES[5])
 
-  const {historyQuery: portfolio} = usePortfolio()
-  const currency = portfolio?.currency ?? "USD"
+  const {historyQuery} = usePortfolio()
+  const {statsQuery} = usePositions()
 
-  const { portfolioStats } = filterPortfolio(portfolio?.history, timeRange)
+  const currency = historyQuery?.currency ?? "USD"
+
+  const { portfolioStats } = filterPortfolio(historyQuery?.history, timeRange.days)
+  const { sorted, best, worst } = useMemo(() =>
+          getSortedTickersByReturn(statsQuery, timeRange.label),
+      [statsQuery, timeRange])
+
+  const tabs = [
+    {
+      value: "overview",
+      label: "Overview",
+    },
+    {
+      value: "allocation",
+      label: "Allocation",
+    },
+    {
+      value: "performance",
+      label: "Performance",
+    },
+    {
+      value: "comparison",
+      label: "Comparison",
+    }
+  ]
   return (
       <main>
         <SiteHeader headerTitle="Analytics">
@@ -35,8 +62,8 @@ export default function AnalyticsPage() {
             {TIME_RANGES.map((range) => (
                 <Button
                     key={range.label}
-                    variant={timeRange === range.days ? "default" : "ghost"}
-                    onClick={() => setTimeRange(range.days)}
+                    variant={timeRange.days === range.days ? "default" : "ghost"}
+                    onClick={() => setTimeRange(range)}
                     className="text-xs px-2 sm:px-3 h-4"
                 >
                   {range.label}
@@ -61,14 +88,24 @@ export default function AnalyticsPage() {
             />
             <StatCard
                 label={`Total Invested`}
-                tooltip={""}
                 value={formatData(portfolioStats.totalInvested, currency)}
             />
             <StatCard
                 label={`Total Withdrawn`}
                 value={formatData(portfolioStats.totalWithdrawn, currency)}
             />
+            <StatCard
+                label={`Best Performer`}
+                tooltip={<ReturnBadge value={best?.percentReturn || 0} />}
+                value={best?.ticker || "N/A"}
+            />
+            <StatCard
+                label={`Worst Performer`}
+                tooltip={<ReturnBadge value={worst?.percentReturn || 0} />}
+                value={worst?.ticker || "N/A"}
+            />
           </div>
+          <AnimatedTabs tabs={tabs}/>
         </div>
       </main>
   )

@@ -1,7 +1,7 @@
-import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query"
+import {useMutation, useQueryClient, useQuery, useQueries} from "@tanstack/react-query"
 import { fetcher } from "@/shared/api/client"
 import { API_CONFIG, QueryParams } from "@/config/api"
-import { Position } from "@/shared/types/position"
+import {Position, StatsPosition} from "@/shared/types/position"
 
 type UsePositionsOptions = {
     get_last?: boolean
@@ -11,14 +11,27 @@ type UsePositionsOptions = {
 export function usePositions({ get_last, params }: UsePositionsOptions = {}) {
     const queryClient = useQueryClient()
 
-    const positionsQuery = useQuery({
-        queryKey: ["positions", { get_last: !!get_last, ...params }],
-        queryFn: () =>
-            fetcher<Position[]>(
-                API_CONFIG.endpoints.positions.snapshot({ get_last, ...params })
-            ),
-        staleTime: 1000 * 60 * 5,
+    const results = useQueries({
+        queries: [
+            {
+                queryKey: ["positions", { get_last: !!get_last, ...params }],
+                queryFn: () =>
+                    fetcher<Position[]>(
+                        API_CONFIG.endpoints.positions.snapshot({ get_last, ...params })
+                    ),
+                staleTime: 1000 * 60 * 5,
+            },
+            {
+                queryKey: ["stats", {...params}],
+                queryFn: () =>
+                    fetcher<StatsPosition[]>(API_CONFIG.endpoints.positions.stats()),
+                staleTime: 1000 * 60 * 5,
+            },
+        ],
     })
+
+    const [positionsQuery, statsQuery] = results
+
 
     const refreshMutation = useMutation({
         mutationFn: () =>
@@ -35,10 +48,12 @@ export function usePositions({ get_last, params }: UsePositionsOptions = {}) {
     })
 
     return {
-        positions: positionsQuery.data ?? [],
-        isLoading: positionsQuery.isLoading,
-        isError: positionsQuery.isError,
-        refetch: positionsQuery.refetch,
+        positionsQuery: positionsQuery.data ?? [],
+        statsQuery: statsQuery.data ?? [],
+        isLoading: positionsQuery.isLoading || statsQuery.isLoading,
+        isError: positionsQuery.isError || statsQuery.isError,
+        positionsRefetch: positionsQuery.refetch,
+        statsRefetch: statsQuery.refetch,
         refresh: refreshMutation.mutate,
         isRefreshing: refreshMutation.isPending,
     }

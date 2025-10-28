@@ -92,13 +92,19 @@ export function useUpload(onSuccess?: () => void): UseUploadState {
     const uploadTransactions = useCallback(async (source: UploadSource) => {
         try {
             setStatus("loading")
-
             let file: File
 
             if (source instanceof File) {
                 file = source
             } else {
-                const csv = Papa.unparse(source.transactions)
+                const formattedTransactions = source.transactions.map(t => ({
+                    ...t,
+                    Date: t.date instanceof Date
+                        ? t.date.toLocaleDateString('en-CA') // YYYY-MM-DD Format
+                        : t.date
+                }))
+
+                const csv = Papa.unparse(formattedTransactions)
                 const blob = new Blob([csv], {type: "text/csv"})
                 file = new File([blob], "manual.csv", {type: "text/csv"})
             }

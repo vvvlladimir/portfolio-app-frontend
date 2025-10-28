@@ -1,5 +1,6 @@
 import {PortfolioHistory} from "@/shared/types/portfolio"
 import { sumField } from "@/shared/lib/utils"
+import {StatsPosition} from "@/shared/types/position";
 
 export function filterPortfolio(portfolio: PortfolioHistory[] | undefined, days: number) {
     if (!portfolio) {
@@ -59,4 +60,41 @@ export function filterPortfolio(portfolio: PortfolioHistory[] | undefined, days:
             lastValue: last,
         },
     }
+}
+
+
+export type SortedTickersResult = {
+    sorted: StatsPosition[]
+    best: StatsPosition | null
+    worst: StatsPosition | null
+}
+
+export function getSortedTickersByReturn(
+    stats: StatsPosition[],
+    timeRangeLabel: string
+): SortedTickersResult {
+    if (!stats?.length) return { sorted: [], best: null, worst: null }
+
+    const normalized: StatsPosition[] = stats.map((s) => {
+        const absReturn = timeRangeLabel === "ALL" ? s.total_pnl : s.returns?.[timeRangeLabel]
+        const percent: number | undefined =
+            absReturn != null && s.total_value
+                ? (absReturn / s.total_value) * 100
+                : undefined
+
+        return { ...s, percentReturn: percent }
+    })
+
+    const valid = normalized.filter((s) => typeof s.percentReturn === "number")
+
+    if (!valid.length) return { sorted: [], best: null, worst: null }
+
+    const sorted = [...valid].sort(
+        (a, b) => (b.percentReturn ?? 0) - (a.percentReturn ?? 0)
+    )
+
+    const best = sorted[0] ?? null
+    const worst = sorted[sorted.length - 1] ?? null
+
+    return { sorted, best, worst }
 }

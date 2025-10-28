@@ -8,13 +8,16 @@ export const API_CONFIG = {
   baseURL: process.env.API_URL || "http://localhost:8000",
   endpoints: {
     transactions: {
-      upload: "/upload/transactions/csv",
+      upload: (params?: QueryParams) =>
+          getApiUrl("/upload/transactions/csv", params),
       get: (params?: QueryParams) =>
           getApiUrl("/transactions", params),
     },
     positions:{
       snapshot: (params?: QueryParams) =>
           getApiUrl("/positions/snapshot", params),
+      stats: (params?: QueryParams) =>
+          getApiUrl("/positions/stats", params),
       refresh: "/positions/refresh",
     },
     portfolio:{

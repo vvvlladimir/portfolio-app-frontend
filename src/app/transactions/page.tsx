@@ -31,11 +31,11 @@ import {joinByKey} from "@/shared/lib/utils";
 export default function TransactionsPage() {
     const [transOpen, setTransOpen] = useState(false)
 
-    const {positions, isError: posError} = usePositions({get_last: true})
+    const {positionsQuery, isError: posError} = usePositions({get_last: true})
     const {transactions, isError: transError} = useTransactions()
     const {tickers} = useTickers()
 
-    const positionsData = joinByKey(positions, tickers, "ticker", "ticker_info")
+    const positionsData = joinByKey(positionsQuery, tickers, "ticker", "ticker_info")
     const transactionsData = joinByKey(transactions, tickers, "ticker", "ticker_info")
 
     const TransactionsBlock = () => {
@@ -102,7 +102,7 @@ export default function TransactionsPage() {
     }
 
     const PositionsBlock = () => {
-        if (posError || !positions?.length) {
+        if (posError || !positionsQuery?.length) {
             return (
                 <Card>
                     <CardHeader>
@@ -112,7 +112,7 @@ export default function TransactionsPage() {
                         </CardDescription>
                         <CardAction className={"flex gap-x-2"}>
                             <Button
-                                onClick={() => exportToCSV(positions || [], "positions.csv")}
+                                onClick={() => exportToCSV(positionsQuery || [], "positions.csv")}
                                 disabled={!transactions?.length}
                                 className={"order-5"}
                             >
@@ -136,7 +136,7 @@ export default function TransactionsPage() {
                     </CardDescription>
                     <CardAction className={"flex gap-x-2"}>
                         <Button
-                            onClick={() => exportToCSV(positions || [], "positions.csv")}
+                            onClick={() => exportToCSV(positionsQuery || [], "positions.csv")}
                             disabled={!transactions?.length}
                             className={"order-5"}
                         >

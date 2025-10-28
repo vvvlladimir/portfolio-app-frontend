@@ -17,13 +17,10 @@ import {
     DropdownMenuTrigger,
 } from "@/shared/components/ui/shadcn/dropdown-menu"
 import {MoreHorizontal} from "lucide-react";
-import {DayChangeCell, getDayChange, TotalReturnCell} from "@/shared/components/layout/LiveTickerCell";
 import React from "react";
 import {DataTableColumnHeader} from "@/shared/components/layout/DataTableColumnHeader";
 import {LiveTicker, useTickerData, useTickerStore} from "@/shared/stores/useTickerStore";
-import {ReturnBadge} from "@/shared/components/ui/ReturnBadge";
 import {useValueHighlight} from "@/shared/hooks/useValueHighlight";
-import {ProfitBadge} from "@/shared/components/ui/ProfitBadge";
 import {cn} from "@/shared/lib/utils";
 
 export const positionsColumns: ColumnDef<Position>[] = [
@@ -125,7 +122,7 @@ export const positionsColumns: ColumnDef<Position>[] = [
 
                 return (
                     <div className={cn("font-mono tabular-nums text-sm text-right")}>
-                        <div className={cn("inline-block", highlight, dayChange >= 0 ? "text-profit" : "text-loss")}>
+                        <div className={cn("inline-block rounded-sm",dayChange >= 0 ? "text-profit" : "text-loss",  highlight)}>
                             <p>
                                 {formatData(dayChange, row.original.ticker_info?.currency)}
                             </p>

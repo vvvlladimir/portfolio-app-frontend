@@ -61,10 +61,10 @@
   }
 
   .animate-highlightGreen {
-    animation: highlightGreen 0.8s ease-out;
+    animation: highlight-green 0.8s ease-out;
   }
   .animate-highlightRed {
-    animation: highlightRed 0.8s ease-out;
+    animation: highlight-red 0.8s ease-out;
   }
 
   .text-profit {
