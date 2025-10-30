@@ -7,21 +7,12 @@ import {formatData} from "@/shared/lib/formatData"
 import {ReturnBadge} from "@/shared/components/ui/ReturnBadge"
 import {Button} from "@/shared/components/ui/shadcn/button"
 import {StatCard} from "@/shared/components/ui/StatCard"
-import {sumField} from "@/shared/lib/utils"
 import {usePortfolio} from "@/shared/api/queries/usePortfolio";
 import {filterPortfolio, getSortedTickersByReturn} from "@/shared/lib/filter";
 import {usePositions} from "@/shared/api/queries/usePositions";
 import {AnimatedTabs} from "@/shared/components/ui/AnimatedTabs";
-
-const TIME_RANGES = [
-  { label: "1W", days: 7 },
-  { label: "1M", days: 30 },
-  { label: "3M", days: 90 },
-  { label: "6M", days: 180 },
-  { label: "1Y", days: 365 },
-  { label: "ALL", days: 0 }
-]
-type TimeRange = (typeof TIME_RANGES)[number]
+import Overview from "@/app/analytics/overview";
+import {TIME_RANGES, TimeRange} from "@/shared/components/widgets/charts/TimeRangeSelect";
 
 export default function AnalyticsPage() {
   const [timeRange, setTimeRange] = useState<TimeRange>(TIME_RANGES[5])
@@ -40,6 +31,7 @@ export default function AnalyticsPage() {
     {
       value: "overview",
       label: "Overview",
+      content: <Overview timeRange={timeRange} sortedStats={sorted}/>,
     },
     {
       value: "allocation",

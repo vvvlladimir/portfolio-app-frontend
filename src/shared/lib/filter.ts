@@ -76,13 +76,8 @@ export function getSortedTickersByReturn(
     if (!stats?.length) return { sorted: [], best: null, worst: null }
 
     const normalized: StatsPosition[] = stats.map((s) => {
-        const absReturn = timeRangeLabel === "ALL" ? s.total_pnl : s.returns?.[timeRangeLabel]
-        const percent: number | undefined =
-            absReturn != null && s.total_value
-                ? (absReturn / s.total_value) * 100
-                : undefined
-
-        return { ...s, percentReturn: percent }
+        const percent = timeRangeLabel === "ALL" ? s.total_pnl_pct : s.returns?.[timeRangeLabel]
+        return { ...s, percentReturn: percent || undefined }
     })
 
     const valid = normalized.filter((s) => typeof s.percentReturn === "number")
@@ -97,4 +92,44 @@ export function getSortedTickersByReturn(
     const worst = sorted[sorted.length - 1] ?? null
 
     return { sorted, best, worst }
+}
+
+
+export function aggregateByPeriod<T extends { date: string }>(
+    data: T[],
+    period: "day" | "week" | "month"
+): T[] {
+    if (!data?.length) return []
+
+    const sorted = [...data].sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    )
+
+    const result: Record<string, T[]> = {}
+
+    for (const item of sorted) {
+        const d = new Date(item.date)
+
+        let key: string
+        if (period === "day") {
+            key = d.toISOString().split("T")[0]
+        } else if (period === "week") {
+            const weekStart = new Date(d)
+            weekStart.setDate(d.getDate() - d.getDay())
+            key = weekStart.toISOString().split("T")[0]
+        } else {
+            key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`
+        }
+
+        if (!result[key]) result[key] = []
+        result[key].push(item)
+    }
+
+    return Object.entries(result).map(([key, items]) => {
+        const last = items[items.length - 1]
+        return {
+            ...last,
+            date: key,
+        }
+    })
 }

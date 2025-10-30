@@ -148,7 +148,7 @@ export const positionsColumns: ColumnDef<Position>[] = [
                 const original = row.original
                 const live = useTickerData(row.getValue("ticker")) as LiveTicker
                 const totalChange = original.total_pnl + ((live?.change || 0) * original.shares)
-                const totalChangePct = original.shares > 0 ? (totalChange / (original.shares * original.close) * 100) : 0
+                const totalChangePct = original.shares > 0 ? (totalChange / original.cum_invested * 100) : 0
                 return (
                     <div className={cn("font-mono tabular-nums text-sm text-right")}>
                         <div className={cn("inline-block", totalChange >= 0 ? "text-profit" : "text-loss")}>

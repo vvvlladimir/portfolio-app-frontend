@@ -14,19 +14,18 @@ import {useValueHighlight} from "@/shared/hooks/useValueHighlight";
 import {CustomChartArea} from "@/shared/components/widgets/charts/custom-chart-area";
 import {StatCard} from "@/shared/components/ui/StatCard";
 import {Position} from "@/shared/types/position";
+import {usePortfolio} from "@/shared/api/queries/usePortfolio";
 
 export default function DashboardPage() {
-    const { data: portfolio } = useSWR<Portfolio>(
-        API_CONFIG.endpoints.portfolio.history(),
-        fetcher
-    )
-    const currency = portfolio?.currency ?? "USD";
+    const {historyQuery} = usePortfolio()
+
+    const currency = historyQuery?.currency ?? "USD";
 
     const {todayChangePercent, coveredWeight} = usePortfolioChange()
 
     const lastValue =
-        portfolio?.history && Array.isArray(portfolio.history) && portfolio.history.length > 0
-            ? portfolio.history[portfolio.history.length - 1]
+        historyQuery?.history && Array.isArray(historyQuery.history) && historyQuery.history.length > 0
+            ? historyQuery.history[historyQuery.history.length - 1]
             : null
 
     const todayChange = (lastValue?.total_value ?? 0) * todayChangePercent / 100
@@ -41,13 +40,13 @@ export default function DashboardPage() {
             },
     }
     const chartData = React.useMemo(() => {
-        if (!portfolio?.history?.length) return []
+        if (!historyQuery?.history?.length) return []
         const livePoint = {
             date: new Date().toISOString(),
             total_pnl_pct: (lastValue?.total_pnl_pct ?? 0) + todayChangePercent,
         }
-        return [...portfolio.history, livePoint]
-    }, [lastValue?.total_pnl_pct, portfolio?.history, todayChangePercent])
+        return [...historyQuery.history, livePoint]
+    }, [lastValue?.total_pnl_pct, historyQuery?.history, todayChangePercent])
 
     return (
         <main>
@@ -96,7 +95,7 @@ export default function DashboardPage() {
                 </div>
 
                 {
-                    portfolio?.history && (
+                    historyQuery?.history && (
                         <CustomChartArea
                             chartData={chartData}
                             chartConfig={chartConfig}

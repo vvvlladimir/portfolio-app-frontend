@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
 
 import {
     Card,
@@ -18,13 +18,13 @@ import {
 import { cn } from "@/shared/lib/utils"
 import { ChartHeader } from "@/shared/components/widgets/charts/ChartHeader"
 import { useTimeRange } from "@/shared/hooks/useTimeRange"
+import {useEffect} from "react";
 
-interface ChartAreaInteractiveProps<T extends { date: string }> {
+interface ChartLineProps<T> {
     chartData: T[]
     chartConfig: ChartConfig
     title?: string
     description?: string
-    gradient?: boolean
     timeSelector?: boolean
     className?: string
     cardClassName?: string
@@ -32,18 +32,17 @@ interface ChartAreaInteractiveProps<T extends { date: string }> {
     defaultTimeRange?: number
 }
 
-export function CustomChartArea<T extends { date: string }>({
+export function CustomChartLine<T extends { date: string; }>({
     chartData,
     chartConfig,
-    title = "Area Chart",
+    title = "Line Chart",
     description = "Showing dynamic data",
-    gradient = false,
     timeSelector = false,
     className,
     cardClassName,
     contentClassName,
     defaultTimeRange = 0,
-}: ChartAreaInteractiveProps<T>) {
+}: ChartLineProps<T>) {
     const { filteredData, selectedIndex, handleRangeChange } = useTimeRange<T>(
         chartData,
         defaultTimeRange
@@ -67,7 +66,7 @@ export function CustomChartArea<T extends { date: string }>({
                         className
                     )}
                 >
-                    <AreaChart data={filteredData}>
+                    <LineChart data={filteredData}>
                         <CartesianGrid vertical={false} />
                         <XAxis
                             dataKey="date"
@@ -94,51 +93,24 @@ export function CustomChartArea<T extends { date: string }>({
                                             day: "numeric",
                                         })
                                     }
-                                    indicator="dot"
+                                    indicator="line"
                                 />
                             }
                         />
 
-                        {gradient && (
-                            <defs>
-                                {Object.entries(chartConfig).map(([key, config]) => (
-                                    <linearGradient
-                                        key={key}
-                                        id={`fill-${key}`}
-                                        x1="0"
-                                        y1="0"
-                                        x2="0"
-                                        y2="1"
-                                    >
-                                        <stop
-                                            offset="5%"
-                                            stopColor={config.color}
-                                            stopOpacity={0.8}
-                                        />
-                                        <stop
-                                            offset="95%"
-                                            stopColor={config.color}
-                                            stopOpacity={0.1}
-                                        />
-                                    </linearGradient>
-                                ))}
-                            </defs>
-                        )}
-
                         {Object.entries(chartConfig).map(([key, config]) => (
-                            <Area
+                            <Line
                                 key={key}
                                 dataKey={key}
                                 type="natural"
                                 stroke={config.color}
-                                fillOpacity={0.3}
-                                fill={gradient ? `url(#fill-${key})` : config.color}
-                                stackId="a"
+                                strokeWidth={2}
+                                dot={false}
                             />
                         ))}
 
                         <ChartLegend content={<ChartLegendContent />} />
-                    </AreaChart>
+                    </LineChart>
                 </ChartContainer>
             </CardContent>
         </Card>

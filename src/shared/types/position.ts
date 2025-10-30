@@ -13,6 +13,8 @@ export interface Position {
     close: number
     gross_invested: number
     gross_withdrawn: number
+    cum_invested: number
+    cum_withdrawn: number
     total_pnl: number
     ticker_info: Ticker
 }
@@ -26,5 +28,6 @@ export interface StatsPosition {
     ticker: string
     total_value: number
     total_pnl: number
+    total_pnl_pct: number
     returns: ReturnValue
 }
