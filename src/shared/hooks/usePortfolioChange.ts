@@ -3,15 +3,15 @@ import { useTickerStore } from "@/shared/stores/useTickerStore"
 import {usePortfolio} from "@/shared/api/queries/usePortfolio";
 
 export function usePortfolioChange() {
-    const { weights } = usePortfolio()
+    const { weightsQuery } = usePortfolio()
     const liveData = useTickerStore((s) => s.liveData)
     return useMemo(() => {
-        if (!weights?.length) return { todayChangePercent: 0, coveredWeight: 0 }
+        if (!weightsQuery?.length) return { todayChangePercent: 0, coveredWeight: 0 }
 
         let todayChangePercent = 0
         let coveredWeight = 0
 
-        for (const { ticker, weight } of weights) {
+        for (const { ticker, weight } of weightsQuery) {
             const live = liveData[ticker]
             if (!live?.changePercent) continue
 
@@ -20,5 +20,5 @@ export function usePortfolioChange() {
         }
 
         return { todayChangePercent, coveredWeight }
-    }, [weights, liveData])
+    }, [weightsQuery, liveData])
 }

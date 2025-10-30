@@ -66,14 +66,19 @@
   .animate-highlightRed {
     animation: highlight-red 0.8s ease-out;
   }
+}
 
-  .text-profit {
-    @apply text-green-600 dark:text-green-400;
-  }
-
-  .text-loss {
-    @apply text-red-700 dark:text-red-400;
-  }
+.text-profit {
+  color: var(--color-profit);
+  border-color: var(--color-profit);
+}
+.text-loss {
+  color: var(--color-loss);
+  border-color: var(--color-loss);
+}
+.dark {
+  --color-profit: var(--color-profit-light);
+  --color-loss: var(--color-loss-light);
 }
 
 body {
@@ -121,6 +126,10 @@ code, pre {
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --color-profit: hsl(170, 87%, 32%);
+  --color-profit-light: hsl(174, 42%, 70%);
+  --color-loss: hsl(355, 88%, 58%);
+  --color-loss-light: hsl(2, 83%, 81%);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -156,6 +165,10 @@ code, pre {
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.556 0 0);
+    --color-profit: hsl(170, 87%, 32%);
+    --color-profit-light: hsl(174, 56%, 23%);
+    --color-loss: hsl(355, 88%, 58%);
+    --color-loss-light: hsl(1, 45%, 34%);
   }
 }
 
@@ -191,6 +204,11 @@ code, pre {
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  --color-profit: hsl(165, 70%, 50%);
+  --color-profit-light: hsl(164, 55%, 65%);
+  --color-loss: hsl(6, 70%, 60%);
+  --color-loss-light: hsl(6, 55%, 70%);
+
 }
 
 @layer base {

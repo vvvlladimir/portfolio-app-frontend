@@ -1,10 +1,11 @@
-import React from "react";
+import React, {useMemo} from "react";
 import {usePortfolio} from "@/shared/api/queries/usePortfolio";
 import {CustomChartLine} from "@/shared/components/widgets/charts/custom-chart-line";
 import {aggregateByPeriod, getChanges} from "@/shared/lib/filter";
 import {TimeRange} from "@/shared/components/widgets/charts/TimeRangeSelect";
 import {CustomChartBar} from "@/shared/components/widgets/charts/custom-chart-bar";
 import {StatsPosition} from "@/shared/types/position";
+import {joinByKey} from "@/shared/lib/utils";
 
 export type OverviewProps = {
     timeRange: TimeRange,
@@ -12,27 +13,24 @@ export type OverviewProps = {
 }
 
 export default function Overview({timeRange, sortedStats} : OverviewProps) {
-    const {historyQuery} = usePortfolio()
-    const chartConfigLine = {
-        total_value:
-            {
-                label: "Total Value",
-                color: "var(--chart-2)"
-            },
-        invested_value:
-            {
-                label: "Invested Value",
-                color: "var(--chart-1)"
-            },
-    }
+    const {historyQuery, weightsQuery} = usePortfolio()
 
-    const chartConfigBar = {
-        percentReturn: { label: "Return %", color: "var(--chart-1)" },
-    }
+    const weightSortedStats = useMemo(() => {
+        const joined = joinByKey(sortedStats, weightsQuery || [], "ticker")
 
-    const chartConfigBarHistory = {
-        change: { label: "Change", color: "var(--chart-1)" },
-    }
+        return joined.map((item) => {
+            const weight = item.extra_info?.weight ?? 0
+            const percentReturn = item.percentReturn ?? 0
+            const investedValue = item.total_value - (item.returns[timeRange.label] || 0)
+
+            return {
+                ...item,
+                weighted_pnl_pct: percentReturn * weight,
+                weighted_pnl_value: (investedValue ?? 0) * (percentReturn / 100)
+            }
+        })
+    }, [sortedStats, timeRange.label, weightsQuery])
+
     return (
         <div
             className="grid gap-4
@@ -43,29 +41,40 @@ export default function Overview({timeRange, sortedStats} : OverviewProps) {
             <CustomChartLine
                 chartData={aggregateByPeriod(
                     historyQuery?.history || [],
-                    timeRange?.days >= 31 || timeRange?.days == 0 ? 'week' : 'day'
+                    timeRange?.days === 0
+                        ? 'month'
+                        : timeRange?.days >= 31
+                            ? 'week'
+                            : 'day'
                 )}
-                chartConfig={chartConfigLine}
+                chartConfig={{
+                    total_value: { label: "Total Value", color: "var(--color-profit)" },
+                    invested_value: { label: "Invested Value", color: "var(--color-loss)" },
+                }}
                 title="Portfolio Growth"
                 description={`Portfolio for ${timeRange.label}`}
                 defaultTimeRange={timeRange?.days}
             />
 
             <CustomChartBar
-                chartData={sortedStats}
-                chartConfig={chartConfigBar}
+                chartData={weightSortedStats}
+                chartConfig={{
+                    percentReturn: { label: "Return %", color: "var(--color-profit)", negativeColor: "var(--color-loss)", side: "left" },
+                    weighted_pnl_value: { label: "Return Value", color: "var(--color-profit-light)", negativeColor: "var(--color-loss-light)", side: "right" },
+                }}
                 title="Returns by Ticker"
                 description={`Return for ${timeRange.label}`}
                 xKey="ticker"
-                dataKey="percentReturn"
-                yTickFormatter={(v: number) => `${v.toFixed(1)}%`}
+                yTickFormatter={(v: number) => `${v.toFixed(0)}%`}
             />
 
             <CustomChartBar
                 chartData={getChanges(aggregateByPeriod(
                     historyQuery?.history || [], 'month'
                 ), "total_pnl")}
-                chartConfig={chartConfigBarHistory}
+                chartConfig={{
+                    change: { label: "Change", color: "var(--color-profit)", negativeColor: "var(--color-loss)" },
+                }}
                 title="Monthly Returns"
                 xKey="date"
                 dataKey="change"

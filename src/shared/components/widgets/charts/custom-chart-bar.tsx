@@ -1,4 +1,12 @@
-import { Bar, BarChart, CartesianGrid, Cell, LabelList, XAxis, YAxis } from "recharts"
+import {
+    Bar,
+    BarChart,
+    CartesianGrid,
+    Cell,
+    LabelList,
+    XAxis,
+    YAxis,
+} from "recharts"
 import {
     Card,
     CardContent,
@@ -21,26 +29,31 @@ interface ChartBarProps<T> {
     description?: string
     timeSelector?: boolean
     className?: string
-    dataKey?: keyof T | string        // Y
-    xKey?: keyof T | string           // X
-    labelKey?: keyof T | string       // Text
+    dataKey?: keyof T | string        // (если один bar)
+    xKey?: keyof T | string           // X axis
+    labelKey?: keyof T | string       // Text label
     xTickFormatter?: (value: unknown) => string
     yTickFormatter?: (value: number) => string
 }
 
 export function CustomChartBar<T>({
-      chartData,
-      chartConfig = {},
-      title,
-      description,
-      timeSelector = false,
-      className,
-      dataKey = "value",
-      xKey = "date",
-      labelKey = "category",
-      xTickFormatter,
-      yTickFormatter,
-  }: ChartBarProps<T>) {
+                                      chartData,
+                                      chartConfig = {},
+                                      title,
+                                      description,
+                                      timeSelector = false,
+                                      className,
+                                      dataKey,
+                                      xKey = "date",
+                                      labelKey,
+                                      xTickFormatter,
+                                      yTickFormatter,
+                                  }: ChartBarProps<T>) {
+
+    const barKeys = dataKey
+        ? [dataKey as string]
+        : Object.keys(chartConfig)
+
     return (
         <Card className={cn("pt-0 py-2", className)}>
             <ChartHeader
@@ -55,37 +68,79 @@ export function CustomChartBar<T>({
                     config={chartConfig}
                     className={cn("aspect-video h-[30vh] sm:h-[40vh] md:h-[50vh] w-full")}
                 >
-                    <BarChart accessibilityLayer data={chartData} >
+                    <BarChart accessibilityLayer data={chartData} barCategoryGap="15%"
+                              barGap={0}>
                         <CartesianGrid vertical={false} />
                         <XAxis
                             dataKey={xKey as string}
                             tickMargin={8}
                             minTickGap={16}
-                            tickFormatter={(v) => (xTickFormatter ? xTickFormatter(v) : String(v))}
+                            tickFormatter={(v) =>
+                                xTickFormatter ? xTickFormatter(v) : String(v)
+                            }
                         />
                         <YAxis
+                            yAxisId="left"
+                            orientation="left"
                             tickMargin={8}
-                            tickFormatter={(v) => (yTickFormatter ? yTickFormatter(Number(v)) : String(v))}
+                            tickFormatter={(v) =>
+                                yTickFormatter ? yTickFormatter(Number(v)) : String(v)
+                            }
                         />
-                        <ChartTooltip cursor={false} content={<ChartTooltipContent hideIndicator/>} />
-                        <Bar dataKey={dataKey as string}>
-                            <LabelList position="top" dataKey={labelKey as string} fillOpacity={1} />
-                            {chartData?.map((item, idx) => {
-                                const raw = (item as Record<string, unknown>)[dataKey as string]
-                                const num =
-                                    typeof raw === "number"
-                                        ? raw
-                                        : typeof raw === "string"
-                                            ? parseFloat(raw)
-                                            : Number(raw as number)
-                                return (
-                                    <Cell
-                                        key={idx}
-                                        fill={num > 0 ? "var(--chart-2)" : "var(--chart-1)"}
-                                    />
-                                )
-                            })}
-                        </Bar>
+                        <YAxis
+                            yAxisId="right"
+                            orientation="right"
+                            tickMargin={8}
+
+                        />
+                        <ChartTooltip
+                            cursor={false}
+                            content={<ChartTooltipContent hideIndicator />}
+                        />
+
+                        {barKeys.map((key, index) => {
+                            const config = chartConfig[key] || {}
+                            const barColor = config.color || `hsl(var(--chart-${index + 1}))`
+
+                            return (
+                                <Bar
+                                    key={key}
+                                    dataKey={key}
+                                    fill={barColor}
+                                    radius={[4, 4, 0, 0]}
+                                    yAxisId={config.side || "left"}
+                                >
+                                    {labelKey && (
+                                        <LabelList
+                                            dataKey={labelKey as string}
+                                            position="top"
+                                            fillOpacity={1}
+                                        />
+                                    )}
+                                    {chartData?.map((item, idx) => {
+                                        const raw = (item as Record<string, unknown>)[key]
+                                        const num =
+                                            typeof raw === "number"
+                                                ? raw
+                                                : typeof raw === "string"
+                                                    ? parseFloat(raw)
+                                                    : Number(raw as number)
+                                        return (
+                                            <Cell
+                                                key={`${key}-${idx}`}
+                                                fill={
+                                                    num >= 0
+                                                        ? barColor
+                                                        : config.negativeColor ||
+                                                        "hsl(var(--destructive))"
+                                                }
+                                            />
+                                        )
+                                    })}
+                                </Bar>
+                            )
+                        })}
+
                         <ChartLegend content={<ChartLegendContent />} />
                     </BarChart>
                 </ChartContainer>

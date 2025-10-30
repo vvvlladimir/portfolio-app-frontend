@@ -36,7 +36,7 @@ export default function DashboardPage() {
         total_pnl_pct:
             {
                 label: "Total Return % ",
-                color: "var(--chart-2)"
+                color: "var(--color-profit)"
             },
     }
     const chartData = React.useMemo(() => {

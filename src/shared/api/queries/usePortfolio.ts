@@ -34,7 +34,7 @@ export function usePortfolio() {
 
     return {
         historyQuery: historyQuery.data,
-        weights: weightsQuery.data,
+        weightsQuery: weightsQuery.data,
         isLoading: historyQuery.isLoading || weightsQuery.isLoading,
         isError: historyQuery.isError || weightsQuery.isError,
         refresh: refreshMutation.mutate,

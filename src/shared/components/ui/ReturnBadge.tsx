@@ -13,7 +13,7 @@ export function ReturnBadge({ value, animate = false }: { value: number; animate
             variant="outline"
             className={cn(
                 "transition-colors duration-300",
-                isPositive ? "text-green-600 border-green-600" : "text-red-600 border-red-600",
+                isPositive ? "text-profit" : "text-loss",
                 animate ? highlight : ""
             )}
         >

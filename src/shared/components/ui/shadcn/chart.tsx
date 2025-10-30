@@ -13,8 +13,8 @@ export type ChartConfig = {
     label?: React.ReactNode
     icon?: React.ComponentType
   } & (
-    | { color?: string; theme?: never }
-    | { color?: never; theme: Record<keyof typeof THEMES, string> }
+    | { color?: string; negativeColor?: string; side?: "left" | "right"; theme?: never }
+    | { color?: never; negativeColor?: string; side?: "left" | "right"; theme: Record<keyof typeof THEMES, string> }
   )
 }
 
