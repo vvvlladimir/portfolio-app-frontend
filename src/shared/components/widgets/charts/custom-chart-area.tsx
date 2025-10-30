@@ -19,7 +19,7 @@ import { cn } from "@/shared/lib/utils"
 import { ChartHeader } from "@/shared/components/widgets/charts/ChartHeader"
 import { useTimeRange } from "@/shared/hooks/useTimeRange"
 
-interface ChartAreaInteractiveProps<T extends { date: string }> {
+interface ChartAreaInteractiveProps<T> {
     chartData: T[]
     chartConfig: ChartConfig
     title?: string
@@ -32,7 +32,7 @@ interface ChartAreaInteractiveProps<T extends { date: string }> {
     defaultTimeRange?: number
 }
 
-export function CustomChartArea<T extends { date: string }>({
+export function CustomChartArea<T>({
     chartData,
     chartConfig,
     title = "Area Chart",
@@ -46,7 +46,8 @@ export function CustomChartArea<T extends { date: string }>({
 }: ChartAreaInteractiveProps<T>) {
     const { filteredData, selectedIndex, handleRangeChange } = useTimeRange<T>(
         chartData,
-        defaultTimeRange
+        defaultTimeRange,
+        "date" as keyof T
     )
 
     return (

@@ -18,7 +18,6 @@ import {
 import { cn } from "@/shared/lib/utils"
 import { ChartHeader } from "@/shared/components/widgets/charts/ChartHeader"
 import { useTimeRange } from "@/shared/hooks/useTimeRange"
-import {useEffect} from "react";
 
 interface ChartLineProps<T> {
     chartData: T[]
@@ -32,11 +31,11 @@ interface ChartLineProps<T> {
     defaultTimeRange?: number
 }
 
-export function CustomChartLine<T extends { date: string; }>({
+export function CustomChartLine<T>({
     chartData,
     chartConfig,
-    title = "Line Chart",
-    description = "Showing dynamic data",
+    title,
+    description,
     timeSelector = false,
     className,
     cardClassName,
@@ -45,7 +44,8 @@ export function CustomChartLine<T extends { date: string; }>({
 }: ChartLineProps<T>) {
     const { filteredData, selectedIndex, handleRangeChange } = useTimeRange<T>(
         chartData,
-        defaultTimeRange
+        defaultTimeRange,
+        "date" as keyof T
     )
 
     return (
@@ -102,7 +102,7 @@ export function CustomChartLine<T extends { date: string; }>({
                             <Line
                                 key={key}
                                 dataKey={key}
-                                type="natural"
+                                type="monotone"
                                 stroke={config.color}
                                 strokeWidth={2}
                                 dot={false}

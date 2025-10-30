@@ -133,3 +133,20 @@ export function aggregateByPeriod<T extends { date: string }>(
         }
     })
 }
+
+export function getChanges<T>(data: T[], field: keyof T, label: string = "change") {
+    if (!data?.length) return []
+
+    return data.map((item, index) => {
+        const prev = data[index - 1]
+
+        if (!prev || prev[field] == null) {
+            return { ...item, [label]: Number(item[field]) }
+        }
+
+        return {
+            ...item,
+            [label]: Number(item[field]) - Number(prev[field]),
+        }
+    })
+}

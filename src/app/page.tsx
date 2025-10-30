@@ -94,18 +94,14 @@ export default function DashboardPage() {
                     />
                 </div>
 
-                {
-                    historyQuery?.history && (
-                        <CustomChartArea
-                            chartData={chartData}
-                            chartConfig={chartConfig}
-                            title="Portfolio Performance"
-                            description="Total Return"
-                            gradient={true}
-                            timeSelector={true}
-                        />
-                    )
-                }
+                <CustomChartArea
+                    chartData={chartData}
+                    chartConfig={chartConfig}
+                    title="Portfolio Performance"
+                    description="Total Return"
+                    gradient={true}
+                    timeSelector={true}
+                />
 
             </div>
 

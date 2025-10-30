@@ -1,7 +1,7 @@
 import React from "react";
 import {usePortfolio} from "@/shared/api/queries/usePortfolio";
 import {CustomChartLine} from "@/shared/components/widgets/charts/custom-chart-line";
-import { aggregateByPeriod } from "@/shared/lib/filter";
+import {aggregateByPeriod, getChanges} from "@/shared/lib/filter";
 import {TimeRange} from "@/shared/components/widgets/charts/TimeRangeSelect";
 import {CustomChartBar} from "@/shared/components/widgets/charts/custom-chart-bar";
 import {StatsPosition} from "@/shared/types/position";
@@ -31,7 +31,7 @@ export default function Overview({timeRange, sortedStats} : OverviewProps) {
     }
 
     const chartConfigBarHistory = {
-        total_pnl_pct: { label: "Return %", color: "var(--chart-1)" },
+        change: { label: "Change", color: "var(--chart-1)" },
     }
     return (
         <div
@@ -62,14 +62,13 @@ export default function Overview({timeRange, sortedStats} : OverviewProps) {
             />
 
             <CustomChartBar
-                chartData={aggregateByPeriod(
+                chartData={getChanges(aggregateByPeriod(
                     historyQuery?.history || [], 'month'
-                )}
+                ), "total_pnl")}
                 chartConfig={chartConfigBarHistory}
                 title="Monthly Returns"
                 xKey="date"
-                dataKey="total_pnl_pct"
-                yTickFormatter={(v: number) => `${v.toFixed(1)}%`}
+                dataKey="change"
                 className={"col-span-2"}
             />
         </div>
