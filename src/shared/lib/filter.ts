@@ -1,6 +1,5 @@
 import {PortfolioHistory} from "@/shared/types/portfolio"
 import { sumField } from "@/shared/lib/utils"
-import {StatsPosition} from "@/shared/types/position";
 
 export function filterPortfolio(portfolio: PortfolioHistory[] | undefined, days: number) {
     if (!portfolio) {
@@ -63,37 +62,6 @@ export function filterPortfolio(portfolio: PortfolioHistory[] | undefined, days:
 }
 
 
-export type SortedTickersResult = {
-    sorted: StatsPosition[]
-    best: StatsPosition | null
-    worst: StatsPosition | null
-}
-
-export function getSortedTickersByReturn(
-    stats: StatsPosition[],
-    timeRangeLabel: string
-): SortedTickersResult {
-    if (!stats?.length) return { sorted: [], best: null, worst: null }
-
-    const normalized: StatsPosition[] = stats.map((s) => {
-        const percent = timeRangeLabel === "ALL" ? s.total_pnl_pct : s.returns?.[timeRangeLabel]
-        return { ...s, percentReturn: percent || undefined }
-    })
-
-    const valid = normalized.filter((s) => typeof s.percentReturn === "number")
-
-    if (!valid.length) return { sorted: [], best: null, worst: null }
-
-    const sorted = [...valid].sort(
-        (a, b) => (b.percentReturn ?? 0) - (a.percentReturn ?? 0)
-    )
-
-    const best = sorted[0] ?? null
-    const worst = sorted[sorted.length - 1] ?? null
-
-    return { sorted, best, worst }
-}
-
 
 export function aggregateByPeriod<T extends { date: string }>(
     data: T[],
@@ -139,7 +107,6 @@ export function getChanges<T>(data: T[], field: keyof T, label: string = "change
 
     return data.map((item, index) => {
         const prev = data[index - 1]
-
         if (!prev || prev[field] == null) {
             return { ...item, [label]: Number(item[field]) }
         }
@@ -149,4 +116,54 @@ export function getChanges<T>(data: T[], field: keyof T, label: string = "change
             [label]: Number(item[field]) - Number(prev[field]),
         }
     })
+}
+
+export type SortOrder = "asc" | "desc"
+
+export type GenericSortedResult<T> = {
+    sorted: T[]
+    best: T | null
+    worst: T | null
+}
+
+export function getSortedArrayByField<T>(
+    array: T[],
+    selector: keyof T | ((item: T) => number | string | null | undefined),
+    order: SortOrder = "desc"
+): GenericSortedResult<T> {
+    if (!array?.length) return { sorted: [], best: null, worst: null }
+
+    const getValue = (item: T) => {
+        if (typeof selector === "function") return selector(item)
+        return item[selector]
+    }
+
+    const valid = array
+        .map((item) => ({ item, value: getValue(item) }))
+        .filter(({ value }) => value !== undefined && value !== null)
+
+    if (!valid.length) return { sorted: [], best: null, worst: null }
+
+    const sorted = [...valid].sort((a, b) => {
+        const av = a.value
+        const bv = b.value
+
+        if (typeof av === "number" && typeof bv === "number") {
+            return order === "asc" ? av - bv : bv - av
+        }
+
+        if (typeof av === "string" && typeof bv === "string") {
+            return order === "asc"
+                ? av.localeCompare(bv)
+                : bv.localeCompare(av)
+        }
+
+        return 0
+    })
+
+    const result = sorted.map(({ item }) => item)
+    const best = result[0] ?? null
+    const worst = result[result.length - 1] ?? null
+
+    return { sorted: result, best, worst }
 }

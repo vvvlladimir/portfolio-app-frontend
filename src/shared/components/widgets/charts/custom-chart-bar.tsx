@@ -21,6 +21,7 @@ import {
 } from "@/shared/components/ui/shadcn/chart"
 import { ChartHeader } from "@/shared/components/widgets/charts/ChartHeader"
 import { cn } from "@/shared/lib/utils"
+import * as React from "react";
 
 interface ChartBarProps<T> {
     chartData?: T[]

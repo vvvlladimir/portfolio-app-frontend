@@ -19,15 +19,25 @@ export interface Position {
     ticker_info: Ticker
 }
 
-export interface ReturnValue {
-    [period: string]: number | null
+export interface StatsPeriods {
+    start_date: string
+    end_date: string
+    twr_pct?: number
+    pnl_abs: number
+    cash_in: number
+    cash_out: number
+    mv_start: number
+    mv_end: number
 }
 
 export interface StatsPosition {
-    percentReturn? : number
     ticker: string
-    total_value: number
+    as_of: string
+    currency?: string
+    market_value: number
     total_pnl: number
-    total_pnl_pct: number
-    returns: ReturnValue
+    total_pnl_pct?: number
+    cum_invested: number
+    cum_withdrawn: number
+    periods: Record<string, StatsPeriods>
 }

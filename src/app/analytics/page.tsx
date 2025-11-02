@@ -8,11 +8,12 @@ import {ReturnBadge} from "@/shared/components/ui/ReturnBadge"
 import {Button} from "@/shared/components/ui/shadcn/button"
 import {StatCard} from "@/shared/components/ui/StatCard"
 import {usePortfolio} from "@/shared/api/queries/usePortfolio";
-import {filterPortfolio, getSortedTickersByReturn} from "@/shared/lib/filter";
+import {filterPortfolio, getSortedArrayByField} from "@/shared/lib/filter";
 import {usePositions} from "@/shared/api/queries/usePositions";
 import {AnimatedTabs} from "@/shared/components/ui/AnimatedTabs";
 import Overview from "@/app/analytics/overview";
 import {TIME_RANGES, TimeRange} from "@/shared/components/widgets/charts/TimeRangeSelect";
+import Allocation from "@/app/analytics/allocation";
 
 export default function AnalyticsPage() {
   const [timeRange, setTimeRange] = useState<TimeRange>(TIME_RANGES[5])
@@ -24,18 +25,26 @@ export default function AnalyticsPage() {
 
   const { portfolioStats } = filterPortfolio(historyQuery?.history, timeRange.days)
   const { sorted, best, worst } = useMemo(() =>
-          getSortedTickersByReturn(statsQuery, timeRange.label),
-      [statsQuery, timeRange])
+      getSortedArrayByField(
+          statsQuery,
+          (s): number | undefined =>
+              timeRange.label === "ALL"
+                  ? s.total_pnl_pct
+                  : s?.periods?.[timeRange.label]?.twr_pct,
+          "desc"),
+      [statsQuery, timeRange]
+  )
 
   const tabs = [
     {
       value: "overview",
       label: "Overview",
-      content: <Overview timeRange={timeRange} sortedStats={sorted}/>,
+      content: <Overview timeRange={timeRange} stats={sorted}/>,
     },
     {
       value: "allocation",
       label: "Allocation",
+      content: <Allocation timeRange={timeRange} stats={sorted}/>,
     },
     {
       value: "performance",
@@ -88,12 +97,12 @@ export default function AnalyticsPage() {
             />
             <StatCard
                 label={`Best Performer`}
-                tooltip={<ReturnBadge value={best?.percentReturn || 0} />}
+                tooltip={<ReturnBadge value={best?.periods?.[timeRange.label]?.twr_pct || best?.total_pnl_pct || 0} />}
                 value={best?.ticker || "N/A"}
             />
             <StatCard
                 label={`Worst Performer`}
-                tooltip={<ReturnBadge value={worst?.percentReturn || 0} />}
+                tooltip={<ReturnBadge value={worst?.periods?.[timeRange.label]?.twr_pct || worst?.total_pnl_pct || 0} />}
                 value={worst?.ticker || "N/A"}
             />
           </div>

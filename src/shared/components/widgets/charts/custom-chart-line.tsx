@@ -28,7 +28,9 @@ interface ChartLineProps<T> {
     className?: string
     cardClassName?: string
     contentClassName?: string
-    defaultTimeRange?: number
+    defaultTimeRange?: number,
+    xTickFormatter?: (value: unknown) => string
+    yTickFormatter?: (value: number) => string
 }
 
 export function CustomChartLine<T>({
@@ -41,6 +43,8 @@ export function CustomChartLine<T>({
     cardClassName,
     contentClassName,
     defaultTimeRange = 0,
+    xTickFormatter,
+    yTickFormatter,
 }: ChartLineProps<T>) {
     const { filteredData, selectedIndex, handleRangeChange } = useTimeRange<T>(
         chartData,
@@ -74,13 +78,9 @@ export function CustomChartLine<T>({
                             axisLine={false}
                             tickMargin={8}
                             minTickGap={32}
-                            tickFormatter={(value) => {
-                                const date = new Date(value as string)
-                                return date.toLocaleDateString("en-US", {
-                                    month: "short",
-                                    day: "numeric",
-                                })
-                            }}
+                            tickFormatter={(v) =>
+                                xTickFormatter ? xTickFormatter(v) : String(v)
+                            }
                         />
                         <YAxis tickLine={false} axisLine={false} tickMargin={8} tickCount={8} />
                         <ChartTooltip

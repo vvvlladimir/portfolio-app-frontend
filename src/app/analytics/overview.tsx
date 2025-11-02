@@ -5,31 +5,30 @@ import {aggregateByPeriod, getChanges} from "@/shared/lib/filter";
 import {TimeRange} from "@/shared/components/widgets/charts/TimeRangeSelect";
 import {CustomChartBar} from "@/shared/components/widgets/charts/custom-chart-bar";
 import {StatsPosition} from "@/shared/types/position";
-import {joinByKey} from "@/shared/lib/utils";
 
 export type OverviewProps = {
     timeRange: TimeRange,
-    sortedStats: StatsPosition[]
+    stats: StatsPosition[]
 }
 
-export default function Overview({timeRange, sortedStats} : OverviewProps) {
-    const {historyQuery, weightsQuery} = usePortfolio()
+export default function Overview({timeRange, stats} : OverviewProps) {
+    const {historyQuery} = usePortfolio()
 
-    const weightSortedStats = useMemo(() => {
-        const joined = joinByKey(sortedStats, weightsQuery || [], "ticker")
+    const chartDataStats = useMemo(() => {
+        return stats.map((s) => ({
+            ticker: s.ticker,
+            return_pct:
+                timeRange.label === "ALL"
+                    ? s.total_pnl_pct
+                    : s.periods?.[timeRange.label]?.twr_pct,
+            return_value:
+                timeRange.label === "ALL"
+                    ? s.total_pnl
+                    : s.periods?.[timeRange.label]?.pnl_abs,
+        }))
+    }, [stats, timeRange])
 
-        return joined.map((item) => {
-            const weight = item.extra_info?.weight ?? 0
-            const percentReturn = item.percentReturn ?? 0
-            const investedValue = item.total_value - (item.returns[timeRange.label] || 0)
 
-            return {
-                ...item,
-                weighted_pnl_pct: percentReturn * weight,
-                weighted_pnl_value: (investedValue ?? 0) * (percentReturn / 100)
-            }
-        })
-    }, [sortedStats, timeRange.label, weightsQuery])
 
     return (
         <div
@@ -54,13 +53,30 @@ export default function Overview({timeRange, sortedStats} : OverviewProps) {
                 title="Portfolio Growth"
                 description={`Portfolio for ${timeRange.label}`}
                 defaultTimeRange={timeRange?.days}
+                xTickFormatter={(value) => {
+                    const date = new Date(value as string)
+                    return date.toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                    })
+                }}
             />
 
             <CustomChartBar
-                chartData={weightSortedStats}
+                chartData={chartDataStats}
                 chartConfig={{
-                    percentReturn: { label: "Return %", color: "var(--color-profit)", negativeColor: "var(--color-loss)", side: "left" },
-                    weighted_pnl_value: { label: "Return Value", color: "var(--color-profit-light)", negativeColor: "var(--color-loss-light)", side: "right" },
+                    return_pct: {
+                        label: "Return %",
+                        color: "var(--color-profit)",
+                        negativeColor: "var(--color-loss)",
+                        side: "left",
+                    },
+                    return_value: {
+                        label: "Return Value",
+                        color: "var(--color-profit-light)",
+                        negativeColor: "var(--color-loss-light)",
+                        side: "right",
+                    },
                 }}
                 title="Returns by Ticker"
                 description={`Return for ${timeRange.label}`}
@@ -79,6 +95,12 @@ export default function Overview({timeRange, sortedStats} : OverviewProps) {
                 xKey="date"
                 dataKey="change"
                 className={"col-span-2"}
+                xTickFormatter={(value) => {
+                    const date = new Date(value as string)
+                    return date.toLocaleDateString("en-US", {
+                        month: "short",
+                    })
+                }}
             />
         </div>
     )
