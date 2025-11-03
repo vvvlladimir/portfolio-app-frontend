@@ -44,7 +44,7 @@ export default function AnalyticsPage() {
     {
       value: "allocation",
       label: "Allocation",
-      content: <Allocation timeRange={timeRange} stats={sorted}/>,
+      content: <Allocation timeRange={timeRange}/>,
     },
     {
       value: "performance",

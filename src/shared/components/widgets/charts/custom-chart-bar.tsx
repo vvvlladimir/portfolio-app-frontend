@@ -30,7 +30,6 @@ interface ChartBarProps<T> {
     description?: string
     timeSelector?: boolean
     className?: string
-    dataKey?: keyof T | string        // (если один bar)
     xKey?: keyof T | string           // X axis
     labelKey?: keyof T | string       // Text label
     xTickFormatter?: (value: unknown) => string
@@ -44,16 +43,13 @@ export function CustomChartBar<T>({
                                       description,
                                       timeSelector = false,
                                       className,
-                                      dataKey,
                                       xKey = "date",
                                       labelKey,
                                       xTickFormatter,
                                       yTickFormatter,
                                   }: ChartBarProps<T>) {
 
-    const barKeys = dataKey
-        ? [dataKey as string]
-        : Object.keys(chartConfig)
+    const barKeys = Object.keys(chartConfig)
 
     return (
         <Card className={cn("pt-0 py-2", className)}>

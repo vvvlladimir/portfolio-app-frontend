@@ -127,7 +127,7 @@ export type GenericSortedResult<T> = {
 }
 
 export function getSortedArrayByField<T>(
-    array: T[],
+    array: T[] | undefined,
     selector: keyof T | ((item: T) => number | string | null | undefined),
     order: SortOrder = "desc"
 ): GenericSortedResult<T> {

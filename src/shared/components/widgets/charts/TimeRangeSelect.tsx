@@ -21,7 +21,7 @@ export type TimeRange = (typeof TIME_RANGES)[number]
 
 export type TimeRangeSelectProps = {
   selectedIndex: number | null
-  onValueChangeAction: (index: string) => void
+  onValueChangeAction?: (index: string) => void
 }
 
 export function TimeRangeSelect({ selectedIndex, onValueChangeAction }: TimeRangeSelectProps) {

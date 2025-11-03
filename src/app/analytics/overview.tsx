@@ -93,7 +93,6 @@ export default function Overview({timeRange, stats} : OverviewProps) {
                 }}
                 title="Monthly Returns"
                 xKey="date"
-                dataKey="change"
                 className={"col-span-2"}
                 xTickFormatter={(value) => {
                     const date = new Date(value as string)

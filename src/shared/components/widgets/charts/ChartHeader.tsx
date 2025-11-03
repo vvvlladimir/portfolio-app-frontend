@@ -9,7 +9,7 @@ export type ChartHeaderProps = {
   description?: string
   showTimeSelector?: boolean
   selectedIndex: number | null
-  onRangeChangeAction: (index: string) => void
+  onRangeChangeAction?: (index: string) => void
 }
 
 export function ChartHeader({

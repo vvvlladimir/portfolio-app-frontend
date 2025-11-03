@@ -82,7 +82,15 @@ export function CustomChartLine<T>({
                                 xTickFormatter ? xTickFormatter(v) : String(v)
                             }
                         />
-                        <YAxis tickLine={false} axisLine={false} tickMargin={8} tickCount={8} />
+                        <YAxis
+                            tickLine={false}
+                            axisLine={false}
+                            tickMargin={8}
+                            tickCount={8}
+                            tickFormatter={(v) =>
+                                yTickFormatter ? yTickFormatter(Number(v)) : String(v)
+                            }
+                        />
                         <ChartTooltip
                             cursor={false}
                             content={
