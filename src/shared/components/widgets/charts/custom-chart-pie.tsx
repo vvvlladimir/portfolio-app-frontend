@@ -137,7 +137,6 @@ export function CustomChartPie<T>({
                                     dataKey={dataKey as string}
                                     position={labelPosition}
                                     formatter={renderLabel}
-                                    className=""
                                     stroke=""
                                 />
                             )}

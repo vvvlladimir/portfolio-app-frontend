@@ -8,7 +8,7 @@ export type ChartHeaderProps = {
   title?: string
   description?: string
   showTimeSelector?: boolean
-  selectedIndex: number | null
+  selectedIndex?: number | null
   onRangeChangeAction?: (index: string) => void
 }
 
@@ -16,7 +16,7 @@ export function ChartHeader({
   title = "Chart",
   description,
   showTimeSelector = false,
-  selectedIndex,
+  selectedIndex = null,
   onRangeChangeAction,
 }: ChartHeaderProps) {
   return (

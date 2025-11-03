@@ -1,8 +1,8 @@
 import {TimeRange} from "@/shared/components/widgets/charts/TimeRangeSelect";
-import { CustomChartPie } from "@/shared/components/widgets/charts/custom-chart-pie";
 import {usePortfolio} from "@/shared/api/queries/usePortfolio";
 import {useMemo} from "react";
 import {getSortedArrayByField} from "@/shared/lib/filter";
+import {AllocationChartPie} from "@/app/analytics/charts/AllocationChartPie";
 
 export type AllocationProps = {
     timeRange: TimeRange,
@@ -26,22 +26,13 @@ export default function Allocation({timeRange} : AllocationProps) {
             lg:grid-cols-2
             items-stretch"
         >
-            <CustomChartPie
+            <AllocationChartPie
                 chartData={sorted}
                 chartConfig={{
-                    weight: { label: "Weight", color: "var(--color-loss)" },
-                    ticker: { label: "Ticker", color: "var(--color-loss)" },
+                    weight: { label: "Weight"},
                 }}
                 dataKey="weight"
                 nameKey="ticker"
-                title="Portfolio Allocation"
-                description={"Portfolio breakdown by assets"}
-                showLegend={false}
-                outerRadius={150}
-                innerRadius={60}
-                showLabels={true}
-                showPercentage={true}
-                labelPosition="outside"
             />
         </div>
 

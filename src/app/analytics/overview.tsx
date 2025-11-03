@@ -1,10 +1,10 @@
 import React, {useMemo} from "react";
 import {usePortfolio} from "@/shared/api/queries/usePortfolio";
-import {CustomChartLine} from "@/shared/components/widgets/charts/custom-chart-line";
 import {aggregateByPeriod, getChanges} from "@/shared/lib/filter";
 import {TimeRange} from "@/shared/components/widgets/charts/TimeRangeSelect";
 import {CustomChartBar} from "@/shared/components/widgets/charts/custom-chart-bar";
 import {StatsPosition} from "@/shared/types/position";
+import {PortfolioGrowthChart} from "@/app/analytics/charts/PortfolioGrowthChartLine";
 
 export type OverviewProps = {
     timeRange: TimeRange,
@@ -29,7 +29,6 @@ export default function Overview({timeRange, stats} : OverviewProps) {
     }, [stats, timeRange])
 
 
-
     return (
         <div
             className="grid gap-4
@@ -37,7 +36,7 @@ export default function Overview({timeRange, stats} : OverviewProps) {
             lg:grid-cols-2
             items-stretch"
         >
-            <CustomChartLine
+            <PortfolioGrowthChart
                 chartData={aggregateByPeriod(
                     historyQuery?.history || [],
                     timeRange?.days === 0
@@ -50,16 +49,7 @@ export default function Overview({timeRange, stats} : OverviewProps) {
                     total_value: { label: "Total Value", color: "var(--color-profit)" },
                     invested_value: { label: "Invested Value", color: "var(--color-loss)" },
                 }}
-                title="Portfolio Growth"
-                description={`Portfolio for ${timeRange.label}`}
-                defaultTimeRange={timeRange?.days}
-                xTickFormatter={(value) => {
-                    const date = new Date(value as string)
-                    return date.toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                    })
-                }}
+                timeRange={timeRange}
             />
 
             <CustomChartBar
