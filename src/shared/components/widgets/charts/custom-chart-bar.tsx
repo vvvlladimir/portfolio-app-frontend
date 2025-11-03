@@ -30,6 +30,7 @@ import {
   getChartColor,
   parseNumericValue,
   DEFAULT_CHART_HEIGHT,
+  NO_TIME_SELECTOR_PROPS,
 } from "@/shared/components/widgets/charts/chart-utils"
 
 /**
@@ -86,8 +87,7 @@ export function CustomChartBar<T = Record<string, unknown>>({
           title={title}
           description={description}
           showTimeSelector={false}
-          selectedIndex={null}
-          onRangeChangeAction={() => {}}
+          {...NO_TIME_SELECTOR_PROPS}
         />
         <CardContent className={cn("px-4", contentClassName)}>
           <ChartNoData />
@@ -102,8 +102,7 @@ export function CustomChartBar<T = Record<string, unknown>>({
         title={title}
         description={description}
         showTimeSelector={timeSelector}
-        selectedIndex={null}
-        onRangeChangeAction={() => {}}
+        {...NO_TIME_SELECTOR_PROPS}
       />
       <CardContent className={cn("px-4", contentClassName)}>
         <ChartContainer
@@ -145,7 +144,7 @@ export function CustomChartBar<T = Record<string, unknown>>({
                 cursor={false}
                 content={
                   <ChartTooltipContent
-                    hideIndicator={hideTooltipLabel}
+                    hideLabel={hideTooltipLabel}
                     indicator={tooltipIndicator}
                   />
                 }

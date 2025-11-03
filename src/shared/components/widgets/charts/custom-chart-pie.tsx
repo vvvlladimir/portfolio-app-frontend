@@ -11,18 +11,21 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
 } from "@/shared/components/ui/shadcn/chart"
 import { ChartHeader } from "@/shared/components/widgets/charts/ChartHeader"
 import { ChartNoData } from "@/shared/components/widgets/charts/ChartNoData"
 import { cn } from "@/shared/lib/utils"
 import { PieChartProps } from "@/shared/components/widgets/charts/chart-types"
+import { NO_TIME_SELECTOR_PROPS } from "@/shared/components/widgets/charts/chart-utils"
 
 /**
  * Unified Pie Chart Component
  * 
  * A customizable pie/donut chart built on shadcn-ui and Recharts.
  * Supports labels, custom colors, inner radius for donut charts,
- * and all standard chart features (tooltips).
+ * and all standard chart features (tooltips, legends).
  * 
  * @example
  * ```tsx
@@ -55,6 +58,8 @@ export function CustomChartPie<T extends Record<string, unknown> = Record<string
   outerRadius = 80,
   showTooltip = true,
   hideTooltipLabel = true,
+  showLegend = true,
+  legendVerticalAlign = "bottom",
 }: PieChartProps<T>) {
   // Show empty state if no data
   if (!chartData || chartData.length === 0) {
@@ -64,8 +69,7 @@ export function CustomChartPie<T extends Record<string, unknown> = Record<string
           title={title}
           description={description}
           showTimeSelector={false}
-          selectedIndex={null}
-          onRangeChangeAction={() => {}}
+          {...NO_TIME_SELECTOR_PROPS}
         />
         <CardContent className={cn("px-4", contentClassName)}>
           <ChartNoData />
@@ -80,8 +84,7 @@ export function CustomChartPie<T extends Record<string, unknown> = Record<string
         title={title}
         description={description}
         showTimeSelector={timeSelector}
-        selectedIndex={null}
-        onRangeChangeAction={() => {}}
+        {...NO_TIME_SELECTOR_PROPS}
       />
       <CardContent className={cn("px-4", contentClassName)}>
         <ChartContainer
@@ -103,6 +106,12 @@ export function CustomChartPie<T extends Record<string, unknown> = Record<string
               innerRadius={innerRadius}
               outerRadius={outerRadius}
             />
+            {showLegend && (
+              <ChartLegend
+                content={<ChartLegendContent />}
+                verticalAlign={legendVerticalAlign}
+              />
+            )}
           </PieChart>
         </ChartContainer>
       </CardContent>

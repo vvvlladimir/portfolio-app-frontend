@@ -10,6 +10,14 @@ import { ChartConfig } from "@/shared/components/ui/shadcn/chart"
 export const DEFAULT_CHART_HEIGHT = "aspect-video h-[30vh] sm:h-[40vh] md:h-[50vh] w-full"
 
 /**
+ * No-op time selector props for charts that don't support time filtering
+ */
+export const NO_TIME_SELECTOR_PROPS = {
+  selectedIndex: null,
+  onRangeChangeAction: () => {},
+} as const
+
+/**
  * Get bar keys from config or dataKey
  */
 export function getBarKeys(
@@ -59,7 +67,14 @@ export function defaultTooltipDateFormatter(value: unknown): string {
  * Parse numeric value from data item
  */
 export function parseNumericValue(value: unknown): number {
-  if (typeof value === "number") return value
-  if (typeof value === "string") return parseFloat(value)
-  return Number(value)
+  if (typeof value === "number") {
+    if (isNaN(value)) return 0
+    return value
+  }
+  if (typeof value === "string") {
+    const parsed = parseFloat(value)
+    return isNaN(parsed) ? 0 : parsed
+  }
+  const num = Number(value)
+  return isNaN(num) ? 0 : num
 }

@@ -146,7 +146,8 @@ export interface AreaChartProps<T = Record<string, unknown>>
  */
 export interface PieChartProps<T extends Record<string, unknown> = Record<string, unknown>>
   extends BaseChartProps<T>,
-    TooltipConfig {
+    TooltipConfig,
+    LegendConfig {
   /** Key for pie segment values */
   dataKey?: keyof T | string
   /** Key for pie segment names/labels */
