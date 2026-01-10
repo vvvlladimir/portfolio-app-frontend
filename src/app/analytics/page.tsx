@@ -14,6 +14,7 @@ import {AnimatedTabs} from "@/shared/components/ui/AnimatedTabs";
 import Overview from "@/app/analytics/overview";
 import {TIME_RANGES, TimeRange} from "@/shared/components/widgets/charts/TimeRangeSelect";
 import Allocation from "@/app/analytics/allocation";
+import Performance from "@/app/analytics/performance";
 
 export default function AnalyticsPage() {
   const [timeRange, setTimeRange] = useState<TimeRange>(TIME_RANGES[5])
@@ -49,6 +50,7 @@ export default function AnalyticsPage() {
     {
       value: "performance",
       label: "Performance",
+      content: <Performance timeRange={timeRange}/>,
     },
     {
       value: "comparison",

@@ -167,3 +167,22 @@ export function getSortedArrayByField<T>(
 
     return { sorted: result, best, worst }
 }
+
+export function groupByField<T>(
+    data: T[],
+    fieldPath: string
+) {
+    const groups: Record<string, T[]> = {}
+
+    data.forEach((item) => {
+        const key = fieldPath
+            .split(".")
+            .reduce((acc, key) => acc?.[key], item as undefined)
+
+        const groupKey = String(key ?? "Unknown")
+        if (!groups[groupKey]) groups[groupKey] = []
+        groups[groupKey].push(item)
+    })
+
+    return groups
+}

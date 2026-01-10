@@ -13,6 +13,7 @@ export type OverviewProps = {
 
 export default function Overview({timeRange, stats} : OverviewProps) {
     const {historyQuery} = usePortfolio()
+    console.log(historyQuery)
 
     const chartDataStats = useMemo(() => {
         return stats.map((s) => ({

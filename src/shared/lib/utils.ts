@@ -24,7 +24,7 @@ export function joinByKey<
     extra: U[],
     key: K,
     attachKey: string = "extra_info"
-): (T & { [P in typeof attachKey]?: U })[] {
+) {
   const map = new Map<unknown, U>(
       extra.map((item) => [item[key], item])
   )

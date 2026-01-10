@@ -29,7 +29,7 @@ export function useTickers({params }: UsePositionsOptions = {}) {
     })
 
     return {
-        tickers: result.data ?? [],
+        tickersQuery: result.data ?? [],
         isLoading: result.isLoading,
         isError: result.isError,
         refresh: refreshMutation.mutate,

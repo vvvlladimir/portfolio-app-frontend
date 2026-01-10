@@ -36,7 +36,7 @@ export function useTransactions({ params }: UseTransactionsOptions = {}) {
     })
 
     return {
-        transactions: transactionsQuery.data ?? [],
+        transactionsQuery: transactionsQuery.data ?? [],
         isLoading: transactionsQuery.isLoading,
         isError: transactionsQuery.isError,
         refresh: () => queryClient.invalidateQueries({ queryKey: ["transactions"] }),

@@ -44,7 +44,6 @@ export function useUpload(onSuccess?: () => void): UseUploadState {
     // Upload functions
     const handleFileValidation = useCallback(async (file: File) => {
         try {
-            // Validation of file type
             if (!file.type.includes("csv") && !file.name.endsWith(".csv")) {
                 setError("File should be in CSV format")
                 setSelectedFile(null)
@@ -99,7 +98,7 @@ export function useUpload(onSuccess?: () => void): UseUploadState {
             } else {
                 const formattedTransactions = source.transactions.map(t => ({
                     ...t,
-                    Date: t.date instanceof Date
+                    date: t.date instanceof Date
                         ? t.date.toLocaleDateString('en-CA') // YYYY-MM-DD Format
                         : t.date
                 }))

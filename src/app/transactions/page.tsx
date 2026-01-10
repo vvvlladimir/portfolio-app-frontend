@@ -32,14 +32,14 @@ export default function TransactionsPage() {
     const [transOpen, setTransOpen] = useState(false)
 
     const {positionsQuery, isError: posError} = usePositions({get_last: true})
-    const {transactions, isError: transError} = useTransactions()
-    const {tickers} = useTickers()
+    const {transactionsQuery, isError: transError} = useTransactions()
+    const {tickersQuery} = useTickers()
 
-    const positionsData = joinByKey(positionsQuery, tickers, "ticker", "ticker_info")
-    const transactionsData = joinByKey(transactions, tickers, "ticker", "ticker_info")
+    const positionsData = joinByKey(positionsQuery, tickersQuery, "ticker", "ticker_info")
+    const transactionsData = joinByKey(transactionsQuery, tickersQuery, "ticker", "ticker_info")
 
     const TransactionsBlock = () => {
-        if (transError || !transactions?.length) {
+        if (transError || !transactionsQuery?.length) {
             return (
                 <Card>
                     <CardHeader>
@@ -49,8 +49,8 @@ export default function TransactionsPage() {
                         </CardDescription>
                         <CardAction className={"flex gap-x-2"}>
                             <Button
-                                onClick={() => exportToCSV(transactions || [], "transactions.csv")}
-                                disabled={!transactions?.length}
+                                onClick={() => exportToCSV(transactionsQuery || [], "transactions.csv")}
+                                disabled={!transactionsQuery?.length}
                                 className={"order-5"}
                             >
                                 <Download/>
@@ -78,8 +78,8 @@ export default function TransactionsPage() {
 
                     <CardAction className={"flex gap-x-2"}>
                         <Button
-                            onClick={() => exportToCSV(transactions || [], "transactions.csv")}
-                            disabled={!transactions?.length}
+                            onClick={() => exportToCSV(transactionsQuery || [], "transactions.csv")}
+                            disabled={!transactionsQuery?.length}
                             className={"order-5"}
                         >
                             <Download/>
@@ -113,7 +113,7 @@ export default function TransactionsPage() {
                         <CardAction className={"flex gap-x-2"}>
                             <Button
                                 onClick={() => exportToCSV(positionsQuery || [], "positions.csv")}
-                                disabled={!transactions?.length}
+                                disabled={!transactionsQuery?.length}
                                 className={"order-5"}
                             >
                                 <Download/>
@@ -137,7 +137,7 @@ export default function TransactionsPage() {
                     <CardAction className={"flex gap-x-2"}>
                         <Button
                             onClick={() => exportToCSV(positionsQuery || [], "positions.csv")}
-                            disabled={!transactions?.length}
+                            disabled={!transactionsQuery?.length}
                             className={"order-5"}
                         >
                             <Download/>

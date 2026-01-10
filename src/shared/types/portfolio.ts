@@ -13,7 +13,12 @@ export interface PortfolioHistory {
     total_pnl_pct: number
 }
 
+export interface PortfolioWeightsRow {
+    date: string;
+    weights: number[];
+}
+
 export interface PortfolioWeights {
-    ticker: string
-    weight: number
+    tickers: string[];
+    rows: PortfolioWeightsRow[];
 }
